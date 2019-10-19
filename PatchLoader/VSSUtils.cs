@@ -372,15 +372,17 @@ namespace PatchLoader
 
             foreach (DirectoryInfo localSubDir in localDir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
+                VSSItem remoteSubDir = null;
+                VSSItem linkSubDir = null;
+
                 //проверяем только те папки, для который добавляются файлы в репозитории
+                //если там не было папки, добавляем ее
                 if (patchFiles.Where(x => x.AddInRepDir)
                     .Select(x => x.FileInfo.Directory)
                     .Where(x => x.FullName.StartsWith(localSubDir.FullName, StringComparison.InvariantCulture))
                     .Count() > 0)
                 {
                     bool found = false;
-                    VSSItem remoteSubDir = null;
-                    VSSItem linkSubDir = null;
 
                     foreach (VSSItem currRemoteSubDir in remoteDir.Items)
                     {
@@ -395,10 +397,20 @@ namespace PatchLoader
                     {
                         remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
                     }
-                    linkSubDir = linkDir.NewSubproject(localSubDir.Name);
 
-                    PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir);
                 }
+
+                //проверяем только те папки, для которых добавляются файлы в патчи
+                //создаем подпапку
+                if (patchFiles.Where(x => x.AddToPatch)
+                    .Select(x => x.FileInfo.Directory)
+                    .Where(x => x.FullName.StartsWith(localSubDir.FullName, StringComparison.InvariantCulture))
+                    .Count() > 0)
+                {
+                    linkSubDir = linkDir.NewSubproject(localSubDir.Name);
+                }
+
+                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir);
             }
         }
 
