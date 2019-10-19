@@ -26,23 +26,27 @@ namespace PatchLoader
 
         public void Connect()
         {
-            try
+            if (VSSDB == null)
             {
-                VSSDB = new VSSDatabase();
-                VSSDB.Open(Location, Login, "");
-            }
-            catch (System.Runtime.InteropServices.COMException exc)
-            {
-                if (exc.ErrorCode == -2147167977)
+                try
                 {
-                    throw new ArgumentException("Wrong location or login");
+
+                    VSSDB = new VSSDatabase();
+                    VSSDB.Open(Location, Login, "");
                 }
-                else
-                    throw new ArgumentException(VSSErrors.GetMessageByCode(exc.ErrorCode));
-            }
-            catch
-            {
-                throw new Exception("Неопознанная ошибка");
+                catch (System.Runtime.InteropServices.COMException exc)
+                {
+                    if (exc.ErrorCode == -2147167977)
+                    {
+                        throw new ArgumentException("Wrong location or login");
+                    }
+                    else
+                        throw new ArgumentException(VSSErrors.GetMessageByCode(exc.ErrorCode));
+                }
+                catch
+                {
+                    throw new Exception("Неопознанная ошибка");
+                }
             }
         }
 
@@ -191,48 +195,11 @@ namespace PatchLoader
             {
                 throw new Exception("Неопознанная ошибка");
             }
-        }
-
-        private void DeleteVSSIfNotExistsLocal(VSSItem remote, DirectoryInfo local)
-        {
-            foreach(VSSItem subItem in remote.Items)
-            {
-                if (subItem.Type == 1)
-                {
-                    bool found = false;
-
-                    foreach (FileInfo fileInfo in local.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
-                    {
-                        //1 - файл
-                        if (subItem.Name.Equals(fileInfo.Name, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found)
-                    {
-                        subItem.Destroy();
-                    }
-                }
-            }
-
-            foreach(DirectoryInfo subDir in local.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
-            {
-                foreach(VSSItem remoteSubDir in remote.Items)
-                {
-                    if(remoteSubDir.Type == 0 && remoteSubDir.Name.Equals(subDir.Name, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        DeleteVSSIfNotExistsLocal(remoteSubDir, subDir);
-                    }
-                }
-            }
-        }
+        }        
 
         private void DeleteLocalIfNotExistsInVSS(VSSItem remote, DirectoryInfo local)
         {
-            foreach (var subFile in local.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+            foreach (var subFile in local.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
             {
                 bool found = false;
                 foreach (VSSItem subitem in remote.Items)
@@ -264,7 +231,7 @@ namespace PatchLoader
             }
         }
 
-        public void PullFile(string vssPath, DirectoryInfo localPath)
+        public void Pull(string vssPath, DirectoryInfo localPath)
         {
             try
             {
@@ -336,7 +303,7 @@ namespace PatchLoader
         }
 
         //Unpin + Checkout (PrepareToPush) + Checkin + Pin or Add + Pin + + Exception handling
-        public void PushFile(string vssFolder, string localFolder, string localFileName)
+        public VSSItem PushFile(string vssFolder, string localFolder, string localFileName)
         {
             PrepareToPushFile(vssFolder, localFileName);
 
@@ -345,9 +312,10 @@ namespace PatchLoader
 
             try
             {
-                IVSSItem item = VSSDB.get_VSSItem(vssPath, false);
+                VSSItem item = VSSDB.get_VSSItem(vssPath, false);
                 item.Checkin("", localPath);
-                Pin((VSSItem)item, item.VersionNumber);
+                Pin(item, item.VersionNumber);
+                return item;
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -358,58 +326,85 @@ namespace PatchLoader
                 else
                 {
                     IVSSItem folder = VSSDB.get_VSSItem(vssFolder, false);
-                    folder.Add(localPath);
+                    VSSItem item = folder.Add(localPath);
+                    Pin(item, item.VersionNumber);
 
-                    foreach (IVSSItem item in folder.Items)
-                    {
-                        if (item.Name == localFileName)
-                        {
-                            Pin((VSSItem)item, item.VersionNumber);
-                            break;
-                        }
-                    }
+                    return item;
                 }
             }
         }
 
-        public void PushDir(DirectoryInfo localDir, VSSItem remoteDir)
+        public void PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath)
         {
-            DeleteVSSIfNotExistsLocal(remoteDir, localDir);
-            PushDirRec(localDir, remoteDir);
+            VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
+            VSSItem linkRootDir = VSSDB.get_VSSItem(linkPath);
+
+            foreach (VSSItem item in linkRootDir.Items)
+            {
+                if (item.Type == 0 && item.Name.Equals(localDir.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    item.Destroy();
+                }
+            }
+            VSSItem linkDir = linkRootDir.NewSubproject(localDir.Name);
+
+            PushDirRec(localDir, patchFiles, remoteDir, linkDir);
         }
 
-        public void PushDirRec(DirectoryInfo localDir, VSSItem remoteDir)
+        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir)
         {
-            foreach (FileInfo fileInfo in localDir.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+            foreach (FileInfoWithPatchOptions fi in patchFiles)
             {
-                PushFile(remoteDir.Spec, localDir.FullName, fileInfo.Name);
+                //определяем, что мы находимся на нужном уровне
+                if (fi.FileInfo.Directory.FullName.Equals(localDir.FullName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (fi.AddInRepDir)
+                    {
+                        VSSItem item = PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name);
+                        CreateLink(item, linkDir);
+                    }
+                    else if (fi.AddToPatch)
+                    {
+                        PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name);
+                    }
+                }
             }
 
             foreach (DirectoryInfo localSubDir in localDir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
-                bool found = false;
-                VSSItem remoteSubDir = null;
-                foreach (VSSItem currRemoteSubDir in remoteDir.Items)
+                //проверяем только те папки, для который добавляются файлы в репозитории
+                if (patchFiles.Where(x => x.AddInRepDir)
+                    .Select(x => x.FileInfo.Directory)
+                    .Where(x => x.FullName.StartsWith(localSubDir.FullName, StringComparison.InvariantCulture))
+                    .Count() > 0)
                 {
-                    if (currRemoteSubDir.Type == 0 && currRemoteSubDir.Name.Equals(localSubDir.Name, StringComparison.InvariantCultureIgnoreCase))
+                    bool found = false;
+                    VSSItem remoteSubDir = null;
+                    VSSItem linkSubDir = null;
+
+                    foreach (VSSItem currRemoteSubDir in remoteDir.Items)
                     {
-                        found = true;
-                        remoteSubDir = currRemoteSubDir;
+                        if (currRemoteSubDir.Type == 0 && currRemoteSubDir.Name.Equals(localSubDir.Name, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            found = true;
+                            remoteSubDir = currRemoteSubDir;
+                        }
                     }
-                }
 
-                if (!found)
-                {
-                    remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
-                }
+                    if (!found)
+                    {
+                        remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
+                    }
+                    linkSubDir = linkDir.NewSubproject(localSubDir.Name);
 
-                PushDirRec(localSubDir, remoteSubDir);
+                    PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir);
+                }
             }
         }
 
         public void CreateLink(IVSSItem sourceItem, IVSSItem destFolder)
         {
-            sourceItem.Share((VSSItem)destFolder);
+            destFolder.Share((VSSItem)sourceItem);
         }
 
         public void Close()

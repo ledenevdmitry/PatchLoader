@@ -1,0 +1,11 @@
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\bin\Debug\PatchLoader.exe.config
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\bin\Debug\PatchLoader.exe
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\bin\Debug\PatchLoader.pdb
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csprojAssemblyReference.cache
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.MainForm.resources
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.Properties.Resources.resources
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.SettingsForm.resources
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csproj.GenerateResource.cache
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csproj.CoreCompileInputs.cache
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.exe
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.pdb
