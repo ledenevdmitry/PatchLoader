@@ -263,11 +263,11 @@ namespace PatchLoader
             VSSItem objOldItem = objItem.Version[version];
             VSSItem objProject = objItem.Parent;
 
-            objProject.Share(objOldItem, "", 0);
+            objProject.Share(objOldItem, "", (int)VSSFlags.VSSFLAG_GETNO);
         }
 
         //Unpin + Checkout + Exception handling
-        private void PrepareToPushFile(string vssFolder, string localFileName)
+        private void PrepareToPushFile(string vssFolder, string localFolder, string localFileName)
         {
             string fileName = $"{vssFolder}/{localFileName}";
             try
@@ -282,7 +282,7 @@ namespace PatchLoader
                 //!(file is checked out to the current user)
                 if (!(item.IsCheckedOut == 2))
                 {
-                    item.Checkout();
+                    item.Checkout("", Path.Combine(localFolder, localFileName));
                 }
             }
             catch (System.Runtime.InteropServices.COMException exc)
@@ -305,7 +305,7 @@ namespace PatchLoader
         //Unpin + Checkout (PrepareToPush) + Checkin + Pin or Add + Pin + + Exception handling
         public VSSItem PushFile(string vssFolder, string localFolder, string localFileName)
         {
-            PrepareToPushFile(vssFolder, localFileName);
+            PrepareToPushFile(vssFolder, localFolder, localFileName);
 
             string vssPath = $"{vssFolder}/{localFileName}";
             string localPath = Path.Combine(localFolder, localFileName);
@@ -404,7 +404,7 @@ namespace PatchLoader
 
         public void CreateLink(IVSSItem sourceItem, IVSSItem destFolder)
         {
-            destFolder.Share((VSSItem)sourceItem);
+            destFolder.Share((VSSItem)sourceItem, destFolder.Name, (int)VSSFlags.VSSFLAG_GETNO);
         }
 
         public void Close()
