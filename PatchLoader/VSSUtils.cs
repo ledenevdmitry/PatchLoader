@@ -267,7 +267,7 @@ namespace PatchLoader
         }
 
         //Unpin + Checkout + Exception handling
-        private void PrepareToPushFile(string vssFolder, string localFolder, string localFileName)
+        private bool PrepareToPushFile(string vssFolder, string localFolder, string localFileName)
         {
             string fileName = $"{vssFolder}/{localFileName}";
             try
@@ -279,10 +279,15 @@ namespace PatchLoader
                     Unpin((VSSItem)item);
                 }
 
-                //!(file is checked out to the current user)
-                if (!(item.IsCheckedOut == 2))
+                //file is not checked out
+                if (item.IsCheckedOut == 0)
                 {
-                    item.Checkout("", Path.Combine(localFolder, localFileName));
+                    item.Checkout("", Path.Combine(localFolder, localFileName), (int)VSSFlags.VSSFLAG_GETNO);
+                }
+                //file is checked out to another user
+                else if (item.IsCheckedOut == 1)
+                {
+                    return false;
                 }
             }
             catch (System.Runtime.InteropServices.COMException exc)
@@ -293,6 +298,7 @@ namespace PatchLoader
                     throw exc;
                 }
             }
+            return true;
         }
 
         private bool IsFileNotFoundError(System.Runtime.InteropServices.COMException exc)
@@ -303,19 +309,22 @@ namespace PatchLoader
         }
 
         //Unpin + Checkout (PrepareToPush) + Checkin + Pin or Add + Pin + + Exception handling
-        public VSSItem PushFile(string vssFolder, string localFolder, string localFileName)
+        public bool PushFile(string vssFolder, string localFolder, string localFileName, out VSSItem item)
         {
-            PrepareToPushFile(vssFolder, localFolder, localFileName);
+            if(!PrepareToPushFile(vssFolder, localFolder, localFileName))
+            {
+                item = null;
+                return false;
+            }
 
             string vssPath = $"{vssFolder}/{localFileName}";
             string localPath = Path.Combine(localFolder, localFileName);
 
             try
             {
-                VSSItem item = VSSDB.get_VSSItem(vssPath, false);
+                item = VSSDB.get_VSSItem(vssPath, false);
                 item.Checkin("", localPath);
                 Pin(item, item.VersionNumber);
-                return item;
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -326,15 +335,15 @@ namespace PatchLoader
                 else
                 {
                     IVSSItem folder = VSSDB.get_VSSItem(vssFolder, false);
-                    VSSItem item = folder.Add(localPath);
+                    item = folder.Add(localPath);
                     Pin(item, item.VersionNumber);
-
-                    return item;
                 }
             }
+
+            return true;
         }
 
-        public void PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath)
+        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser)
         {
             VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
             VSSItem linkRootDir = VSSDB.get_VSSItem(linkPath);
@@ -348,10 +357,19 @@ namespace PatchLoader
             }
             VSSItem linkDir = linkRootDir.NewSubproject(localDir.Name);
 
-            PushDirRec(localDir, patchFiles, remoteDir, linkDir);
+            vssPathCheckedOutToAnotherUser = new List<string>();
+
+            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser);
+
+            if(vssPathCheckedOutToAnotherUser.Count > 0)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir)
+        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir, List<string> vssPathCheckedOutToAnotherUser)
         {
             foreach (FileInfoWithPatchOptions fi in patchFiles)
             {
@@ -360,12 +378,21 @@ namespace PatchLoader
                 {
                     if (fi.AddInRepDir)
                     {
-                        VSSItem item = PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name);
-                        CreateLink(item, linkDir);
+                        if (PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        {
+                            CreateLink(item, linkDir);
+                        }
+                        else
+                        {
+                            vssPathCheckedOutToAnotherUser.Add($"{remoteDir.Spec}/{fi.FileInfo.Name}");
+                        }
                     }
                     else if (fi.AddToPatch)
                     {
-                        PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name);
+                        if(!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        {
+                            vssPathCheckedOutToAnotherUser.Add($"{linkDir.Spec}/{fi.FileInfo.Name}");
+                        }
                     }
                 }
             }
@@ -410,7 +437,7 @@ namespace PatchLoader
                     linkSubDir = linkDir.NewSubproject(localSubDir.Name);
                 }
 
-                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir);
+                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser);
             }
         }
 

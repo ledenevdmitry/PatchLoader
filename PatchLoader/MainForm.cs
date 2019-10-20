@@ -93,7 +93,11 @@ namespace PatchLoader
                             (bool)x.Cells[2].Value))
                     .ToList();
 
-                    patchUtils.PushPatch(patchDir, patchFiles);
+                if(!patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
+                {
+                    ErrorForm ef = new ErrorForm("Файлы checked out другим пользователем. Невозможно добавить:", string.Join(Environment.NewLine, vssPathCheckedOutToAnotherUser));
+                    ef.ShowDialog();
+                }
             }
         }
 
