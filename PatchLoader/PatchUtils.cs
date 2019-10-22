@@ -20,10 +20,10 @@ namespace PatchLoader
             this.remoteBaseLocation = remoteBaseLocation;
         }
 
-        public bool PushPatch(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, out List<string> vssPathCheckedOutToAnotherUser)
+        public bool PushPatch(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureInfa, List<string> repStructureScripts)
         {
             VSS vss = new VSS(remoteBaseLocation, "Dmitry");
-            return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser);
+            return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, repStructureInfa, repStructureScripts);
         }
     }
 }

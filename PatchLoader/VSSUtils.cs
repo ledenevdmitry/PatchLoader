@@ -343,7 +343,7 @@ namespace PatchLoader
             return true;
         }
 
-        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser)
+        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureInfa, List<string> repStructureScripts)
         {
             VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
             VSSItem linkRootDir = VSSDB.get_VSSItem(linkPath);
@@ -359,7 +359,7 @@ namespace PatchLoader
 
             vssPathCheckedOutToAnotherUser = new List<string>();
 
-            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser);
+            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, repStructureInfa, repStructureScripts, 0);
 
             if(vssPathCheckedOutToAnotherUser.Count > 0)
             {
@@ -369,8 +369,29 @@ namespace PatchLoader
             return true;
         }
 
-        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir, List<string> vssPathCheckedOutToAnotherUser)
+        private Dictionary<int, List<string>> PathesToLevelNamePair(List<string> pathes)
         {
+            Dictionary<int, List<string>> res = new Dictionary<int, List<string>>();
+            foreach (string path in pathes)
+            {
+                string[] splitted = path.Split(new char[] { '/' });
+                for (int i = 0; i < splitted.Length; ++i)
+                {
+                    if(res[i] == null)
+                    {
+                        res[i] = new List<string>();
+                    }
+                    res[i].Add(splitted[i]);
+                }
+            }
+            return res;
+        }
+
+        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir, List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureInfa, List<string> repStructureScripts, int level)
+        {
+            Dictionary<int, List<string>> scriptsDirs = PathesToLevelNamePair(repStructureScripts);
+            Dictionary<int, List<string>> infaDirs = PathesToLevelNamePair(repStructureInfa);
+
             foreach (FileInfoWithPatchOptions fi in patchFiles)
             {
                 //определяем, что мы находимся на нужном уровне
@@ -422,7 +443,20 @@ namespace PatchLoader
 
                     if (!found)
                     {
-                        remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
+                        //первой папкой должна быть папка создания скриптов или информатики
+                        if (level == 0 &&
+                            (localSubDir.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) ||
+                             localSubDir.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase))
+                           ||
+                           //папка после папки источника должна совпадать с доступными путями
+                           level > 1 &&
+                           (localDir.Parent.Parent.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) &&
+                            scriptsDirs[level - 2].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase) ||
+                            localDir.Parent.Parent.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase) &&
+                            scriptsDirs[level - 2].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase)))
+                        {
+                            remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
+                        }
                     }
 
                 }

@@ -22,6 +22,10 @@ namespace PatchLoader
             TbToPatch.Text = Properties.Settings.Default.AddToPatch;
             TbNotToRep.Text = Properties.Settings.Default.NotAddToRep;
             TbNotToPatch.Text = Properties.Settings.Default.NotAddToPatch;
+            TbScriptsSubdir.Text = Properties.Settings.Default.ScriptsSubdir;
+            TbInfaSubdir.Text = Properties.Settings.Default.InfaSubdir;
+            TbRepStructureScripts.Text = Properties.Settings.Default.RepStructureScripts;
+            TbRepStructureInfa.Text = Properties.Settings.Default.RepStructureInfa;
         }
 
         private void BtSubmit_Click(object sender, EventArgs e)
@@ -35,6 +39,10 @@ namespace PatchLoader
             Properties.Settings.Default.AddToPatch = TbToPatch.Text;
             Properties.Settings.Default.NotAddToRep = TbNotToRep.Text;
             Properties.Settings.Default.NotAddToPatch = TbNotToPatch.Text;
+            Properties.Settings.Default.ScriptsSubdir = TbScriptsSubdir.Text;
+            Properties.Settings.Default.InfaSubdir = TbInfaSubdir.Text;
+            Properties.Settings.Default.RepStructureScripts = TbRepStructureScripts.Text;
+            Properties.Settings.Default.RepStructureInfa = TbRepStructureInfa.Text;
 
             Properties.Settings.Default.Save();
 

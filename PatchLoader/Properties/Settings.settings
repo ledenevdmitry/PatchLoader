@@ -26,5 +26,32 @@
     <Setting Name="NotAddToPatch" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ScriptsSubdir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">db_scripts</Value>
+    </Setting>
+    <Setting Name="InfaSubdir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">infa_xml</Value>
+    </Setting>
+    <Setting Name="RepStructureScripts" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Index
+Procedure
+Table
+Tablespace
+User
+View</Value>
+    </Setting>
+    <Setting Name="RepStructureInfa" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Configs
+Mappings
+Mapplets
+Schedulers
+Sessions
+Sources
+Targets
+Tasks
+Transformations
+User-Defined Function
+Workflows</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

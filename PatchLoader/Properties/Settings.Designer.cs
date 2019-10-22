@@ -12,7 +12,7 @@ namespace PatchLoader.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.9.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -116,6 +116,55 @@ namespace PatchLoader.Properties {
             }
             set {
                 this["NotAddToPatch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("db_scripts")]
+        public string ScriptsSubdir {
+            get {
+                return ((string)(this["ScriptsSubdir"]));
+            }
+            set {
+                this["ScriptsSubdir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("infa_xml")]
+        public string InfaSubdir {
+            get {
+                return ((string)(this["InfaSubdir"]));
+            }
+            set {
+                this["InfaSubdir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Index\r\nProcedure\r\nTable\r\nTablespace\r\nUser\r\nView")]
+        public string RepStructureScripts {
+            get {
+                return ((string)(this["RepStructureScripts"]));
+            }
+            set {
+                this["RepStructureScripts"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Configs\r\nMappings\r\nMapplets\r\nSchedulers\r\nSessions\r\nSources\r\nTargets\r\nTasks\r\nTrans" +
+            "formations\r\nUser-Defined Function\r\nWorkflows")]
+        public string RepStructureInfa {
+            get {
+                return ((string)(this["RepStructureInfa"]));
+            }
+            set {
+                this["RepStructureInfa"] = value;
             }
         }
     }

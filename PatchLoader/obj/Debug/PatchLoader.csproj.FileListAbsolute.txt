@@ -10,3 +10,15 @@ C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.cspro
 C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.exe
 C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.pdb
 C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.ErrorForm.resources
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\bin\Debug\PatchLoader.exe.config
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\bin\Debug\PatchLoader.exe
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\bin\Debug\PatchLoader.pdb
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csprojAssemblyReference.cache
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.ErrorForm.resources
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.MainForm.resources
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.Properties.Resources.resources
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.SettingsForm.resources
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csproj.GenerateResource.cache
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csproj.CoreCompileInputs.cache
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.exe
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.pdb
