@@ -343,7 +343,7 @@ namespace PatchLoader
             return true;
         }
 
-        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureInfa, List<string> repStructureScripts)
+        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureScripts, List<string> repStructureInfa)
         {
             VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
             VSSItem linkRootDir = VSSDB.get_VSSItem(linkPath);
@@ -358,8 +358,10 @@ namespace PatchLoader
             VSSItem linkDir = linkRootDir.NewSubproject(localDir.Name);
 
             vssPathCheckedOutToAnotherUser = new List<string>();
+            Dictionary<int, List<string>> scriptsDirs = PathesToLevelNamePair(repStructureScripts);
+            Dictionary<int, List<string>> infaDirs = PathesToLevelNamePair(repStructureInfa);
 
-            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, repStructureInfa, repStructureScripts, 0);
+            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsDirs, infaDirs, 0);
 
             if(vssPathCheckedOutToAnotherUser.Count > 0)
             {
@@ -377,21 +379,18 @@ namespace PatchLoader
                 string[] splitted = path.Split(new char[] { '/' });
                 for (int i = 0; i < splitted.Length; ++i)
                 {
-                    if(res[i] == null)
+                    if(!res.ContainsKey(i + 2))
                     {
-                        res[i] = new List<string>();
+                        res.Add(i + 2, new List<string>());
                     }
-                    res[i].Add(splitted[i]);
+                    res[i + 2].Add(splitted[i]);
                 }
             }
             return res;
         }
 
-        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir, List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureInfa, List<string> repStructureScripts, int level)
+        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir, List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, Dictionary<int, List<string>> scriptsDirs, Dictionary<int, List<string>> infaDirs, int level)
         {
-            Dictionary<int, List<string>> scriptsDirs = PathesToLevelNamePair(repStructureScripts);
-            Dictionary<int, List<string>> infaDirs = PathesToLevelNamePair(repStructureInfa);
-
             foreach (FileInfoWithPatchOptions fi in patchFiles)
             {
                 //определяем, что мы находимся на нужном уровне
@@ -399,7 +398,7 @@ namespace PatchLoader
                 {
                     if (fi.AddInRepDir)
                     {
-                        if (PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        if (remoteDir != null && PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
                         {
                             CreateLink(item, linkDir);
                         }
@@ -410,7 +409,7 @@ namespace PatchLoader
                     }
                     else if (fi.AddToPatch)
                     {
-                        if(!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        if(linkDir != null && !PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
                         {
                             vssPathCheckedOutToAnotherUser.Add($"{linkDir.Spec}/{fi.FileInfo.Name}");
                         }
@@ -443,6 +442,7 @@ namespace PatchLoader
 
                     if (!found)
                     {
+                        bool createDir = false;
                         //первой папкой должна быть папка создания скриптов или информатики
                         if (level == 0 &&
                             (localSubDir.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) ||
@@ -450,10 +450,35 @@ namespace PatchLoader
                            ||
                            //папка после папки источника должна совпадать с доступными путями
                            level > 1 &&
-                           (localDir.Parent.Parent.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) &&
-                            scriptsDirs[level - 2].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase) ||
-                            localDir.Parent.Parent.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase) &&
-                            scriptsDirs[level - 2].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase)))
+                           (localSubDir.Parent.Parent.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) &&
+                            scriptsDirs[level].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase) ||
+                            localSubDir.Parent.Parent.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase) &&
+                            infaDirs[level].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase)))
+                        {
+                            createDir = true;
+                        }
+                        else if(level == 1)
+                        {
+                            if (localSubDir.Parent.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                EnterValueForm evf = new EnterValueForm("Создание новой папки информатики для источника", localSubDir.Name);
+                                if(evf.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                                {
+                                    createDir = true;
+                                }
+                            }
+
+                            if (localSubDir.Parent.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                EnterValueForm evf = new EnterValueForm("Создание новой папки скриптов для источника", localSubDir.Name);
+                                if (evf.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                                {
+                                    createDir = true;
+                                }
+                            }
+                        }
+
+                        if (createDir)
                         {
                             remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
                         }
@@ -471,7 +496,7 @@ namespace PatchLoader
                     linkSubDir = linkDir.NewSubproject(localSubDir.Name);
                 }
 
-                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser);
+                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsDirs, infaDirs, level + 1);
             }
         }
 

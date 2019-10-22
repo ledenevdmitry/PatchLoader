@@ -22,3 +22,4 @@ C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csp
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.csproj.CoreCompileInputs.cache
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.exe
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.pdb
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.EnterValueForm.resources

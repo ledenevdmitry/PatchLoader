@@ -55,7 +55,12 @@ namespace PatchLoader
                         currRow.Cells[0].Value = fromSelectedPath;
 
                         bool addToPatch = addToPatchRegex.IsMatch(fromSelectedPath) && !notAddToPatchRegex.IsMatch(fromSelectedPath);
-                        bool addToRep = addToRepRegex.IsMatch(fromSelectedPath) && !notAddToRepRegex.IsMatch(fromSelectedPath);
+                        bool addToRep = 
+                            addToRepRegex.IsMatch(fromSelectedPath) && 
+                            !notAddToRepRegex.IsMatch(fromSelectedPath) &&
+                            //папка со скриптами, и подпапка есть в списке допустимых
+                            (fileInfo.Directory.Parent.Parent.Parent.Name.Equals(Properties.Settings.Default.ScriptsSubdir) &&
+                             fileInfo.Directory.Equals(;
 
                         currRow.Cells[1].Value = addToPatch && addToRep;
                         currRow.Cells[2].Value = addToPatch;
@@ -75,6 +80,8 @@ namespace PatchLoader
                     Properties.Settings.Default.RemoteLinkRoot,
                     Properties.Settings.Default.BaseLocation);
             }
+
+
         }
 
         private void BtPush_Click(object sender, EventArgs e)
@@ -93,7 +100,11 @@ namespace PatchLoader
                             (bool)x.Cells[2].Value))
                     .ToList();
 
-                if(!patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
+                if (!patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser,
+                    Properties.Settings.Default.ScriptsSubdir,
+                    Properties.Settings.Default.InfaSubdir,
+                    Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList(),
+                    Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()))
                 {
                     ErrorForm ef = new ErrorForm("Файлы checked out другим пользователем. Невозможно добавить:", string.Join(Environment.NewLine, vssPathCheckedOutToAnotherUser));
                     ef.ShowDialog();
