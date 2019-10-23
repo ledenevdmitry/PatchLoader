@@ -26,5 +26,26 @@ namespace PatchLoader
             return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, repStructureScripts, repStructureInfa);
         }
 
+        public bool IsAcceptableDir(DirectoryInfo dir, DirectoryInfo patchDir, List<string> acceptableRemotePathes)
+        {
+            return acceptableRemotePathes
+                .Select(x => Path.Combine(patchDir.FullName, x.Replace('/', '\\')))
+                .Where(x => x.Equals(dir.FullName, StringComparison.InvariantCultureIgnoreCase)).Count() > 0;
+        }
+
+        public bool IsDirectoryNameInPath(DirectoryInfo path, string dirName)
+        {
+            if (path == null)
+            {
+                return false;
+            }
+
+            if (path.Name.Equals(dirName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+
+            return IsDirectoryNameInPath(path.Parent, dirName);
+        }
     }
 }
