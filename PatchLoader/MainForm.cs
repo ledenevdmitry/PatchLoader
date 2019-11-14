@@ -59,12 +59,9 @@ namespace PatchLoader
                             addToRepRegex.IsMatch(fromSelectedPath) && 
                             !notAddToRepRegex.IsMatch(fromSelectedPath) &&
                             //папка со скриптами, и подпапка есть в списке допустимых
-                            (fileInfo.Directory.Parent.Parent.Parent.Name.Equals(Properties.Settings.Default.ScriptsSubdir) &&
-                             patchUtils.IsAcceptableDir(fileInfo.Directory, patchDir, Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList())
+                            (PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.ScriptsSubdir, patchDir, Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList())
                              ||
-                             fileInfo.Directory.Parent.Parent.Parent.Name.Equals(Properties.Settings.Default.InfaSubdir) &&
-                             patchUtils.IsAcceptableDir(fileInfo.Directory, patchDir, Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()))
-                ;
+                             PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.InfaSubdir, patchDir, Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()));
 
                         currRow.Cells[1].Value = addToPatch && addToRep;
                         currRow.Cells[2].Value = addToPatch;

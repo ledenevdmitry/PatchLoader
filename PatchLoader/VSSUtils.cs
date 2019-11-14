@@ -343,7 +343,7 @@ namespace PatchLoader
             return true;
         }
 
-        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureScripts, List<string> repStructureInfa)
+        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser, List<string> scriptsAcceptableRemotePathes, List<string> infaAcceptableRemotePathes, string scriptsSubdir, string infaSubdir, List<string> repStructureScripts, List<string> repStructureInfa)
         {
             VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
             VSSItem linkRootDir = VSSDB.get_VSSItem(linkPath);
@@ -358,12 +358,10 @@ namespace PatchLoader
             VSSItem linkDir = linkRootDir.NewSubproject(localDir.Name);
 
             vssPathCheckedOutToAnotherUser = new List<string>();
-            Dictionary<int, List<string>> scriptsDirs = PathesToLevelNamePair(repStructureScripts);
-            Dictionary<int, List<string>> infaDirs = PathesToLevelNamePair(repStructureInfa);
 
-            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsDirs, infaDirs, 0);
+            PushDirRec(localDir, localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsAcceptableRemotePathes, infaAcceptableRemotePathes, 0);
 
-            if(vssPathCheckedOutToAnotherUser.Count > 0)
+            if (vssPathCheckedOutToAnotherUser.Count > 0)
             {
                 return false;
             }
@@ -371,25 +369,30 @@ namespace PatchLoader
             return true;
         }
 
-        private Dictionary<int, List<string>> PathesToLevelNamePair(List<string> pathes)
+        public void CreateScriptStructure(string folderName, string remoteRoot, string scriptsSubdir, List<string> repStructureScripts)
         {
-            Dictionary<int, List<string>> res = new Dictionary<int, List<string>>();
-            foreach (string path in pathes)
-            {
-                string[] splitted = path.Split(new char[] { '/' });
-                for (int i = 0; i < splitted.Length; ++i)
-                {
-                    if(!res.ContainsKey(i + 2))
-                    {
-                        res.Add(i + 2, new List<string>());
-                    }
-                    res[i + 2].Add(splitted[i]);
-                }
-            }
-            return res;
+            VSSItem repFolder = VSSDB.get_VSSItem(remoteRoot);
+            VSSItem scriptsFolder = repFolder.Child[scriptsSubdir];
+
+            VSSItem newFolder = scriptsFolder.NewSubproject(folderName);
+
+
+
         }
 
-        public void PushDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, VSSItem linkDir, List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, Dictionary<int, List<string>> scriptsDirs, Dictionary<int, List<string>> infaDirs, int level)
+        public void PushDirRec
+        (
+            DirectoryInfo patchDir, 
+            DirectoryInfo localDir, 
+            List<FileInfoWithPatchOptions> patchFiles, 
+            VSSItem remoteDir, VSSItem linkDir,
+            List<string> vssPathCheckedOutToAnotherUser, 
+            string scriptsSubdir, 
+            string infaSubdir, 
+            List<string> scriptsAcceptableRemotePathes, 
+            List<string> infaAcceptableRemotePathes,
+            int level
+        )
         {
             foreach (FileInfoWithPatchOptions fi in patchFiles)
             {
@@ -449,11 +452,11 @@ namespace PatchLoader
                              localSubDir.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase))
                            ||
                            //папка после папки источника должна совпадать с доступными путями
+
+                           //!!! Ошибка. Сейчас смотрим тупо по уровням, а надо проверять путь
                            level > 1 &&
-                           (localSubDir.Parent.Parent.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) &&
-                            scriptsDirs[level].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase) ||
-                            localSubDir.Parent.Parent.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase) &&
-                            infaDirs[level].Contains(localSubDir.Name, StringComparer.InvariantCultureIgnoreCase)))
+                           (PatchUtils.IsAcceptableDir(localSubDir, scriptsSubdir, patchDir,  scriptsAcceptableRemotePathes)) ||
+                            PatchUtils.IsAcceptableDir(localSubDir, infaSubdir, patchDir, infaAcceptableRemotePathes))
                         {
                             createDir = true;
                         }
@@ -496,7 +499,7 @@ namespace PatchLoader
                     linkSubDir = linkDir.NewSubproject(localSubDir.Name);
                 }
 
-                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsDirs, infaDirs, level + 1);
+                PushDirRec(patchDir, localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsAcceptableRemotePathes, infaAcceptableRemotePathes, level + 1);
             }
         }
 
