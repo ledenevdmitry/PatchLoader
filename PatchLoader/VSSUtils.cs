@@ -134,16 +134,16 @@ namespace PatchLoader
             return pattern.IsMatch(item.Name);
         }
 
-        public delegate void MoveDelegate(string movingFolderName, VSSItem movingFolder);
+        public delegate void MoveDelegate(string movingDirName, VSSItem movingDir);
         public event MoveDelegate AfterMove;
         static ReaderWriterLockSlim rwl = new ReaderWriterLockSlim();
 
         public void Move(string destination, IEnumerable<string> items)
         {
-            VSSItem destFolder;
+            VSSItem destDir;
             try
             {
-                destFolder = VSSDB.get_VSSItem(destination, false);
+                destDir = VSSDB.get_VSSItem(destination, false);
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -161,10 +161,10 @@ namespace PatchLoader
                     try
                     {
                         rwl.EnterReadLock();
-                        VSSItem movingFolder = VSSDB.get_VSSItem(item, false);
+                        VSSItem movingDir = VSSDB.get_VSSItem(item, false);
                         rwl.ExitReadLock();
-                        movingFolder.Move(destFolder);
-                        AfterMove(item, movingFolder);
+                        movingDir.Move(destDir);
+                        AfterMove(item, movingDir);
                     }
 
                     catch (System.Runtime.InteropServices.COMException exc)
@@ -184,8 +184,8 @@ namespace PatchLoader
         {
             try
             {
-                VSSItem folder = VSSDB.get_VSSItem(oldName, false);
-                folder.Name = newName;
+                VSSItem dir = VSSDB.get_VSSItem(oldName, false);
+                dir.Name = newName;
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -235,13 +235,13 @@ namespace PatchLoader
         {
             try
             {
-                VSSItem folder = VSSDB.get_VSSItem(vssPath, false);
+                VSSItem dir = VSSDB.get_VSSItem(vssPath, false);
                 if (!localPath.Exists)
                 {
                     localPath.Create();
                 }
-                folder.Get(localPath.FullName, (int)(VSSFlags.VSSFLAG_RECURSYES | VSSFlags.VSSFLAG_REPREPLACE));
-                DeleteLocalIfNotExistsInVSS(folder, localPath);
+                dir.Get(localPath.FullName, (int)(VSSFlags.VSSFLAG_RECURSYES | VSSFlags.VSSFLAG_REPREPLACE));
+                DeleteLocalIfNotExistsInVSS(dir, localPath);
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -267,9 +267,9 @@ namespace PatchLoader
         }
 
         //Unpin + Checkout + Exception handling
-        private bool PrepareToPushFile(string vssFolder, string localFolder, string localFileName)
+        private bool PrepareToPushFile(string vssDir, string localDir, string localFileName)
         {
-            string fileName = $"{vssFolder}/{localFileName}";
+            string fileName = $"{vssDir}/{localFileName}";
             try
             {
                 IVSSItem item = VSSDB.get_VSSItem(fileName, false);
@@ -282,7 +282,7 @@ namespace PatchLoader
                 //file is not checked out
                 if (item.IsCheckedOut == 0)
                 {
-                    item.Checkout("", Path.Combine(localFolder, localFileName), (int)VSSFlags.VSSFLAG_GETNO);
+                    item.Checkout("", Path.Combine(localDir, localFileName), (int)VSSFlags.VSSFLAG_GETNO);
                 }
                 //file is checked out to another user
                 else if (item.IsCheckedOut == 1)
@@ -309,16 +309,16 @@ namespace PatchLoader
         }
 
         //Unpin + Checkout (PrepareToPush) + Checkin + Pin or Add + Pin + + Exception handling
-        public bool PushFile(string vssFolder, string localFolder, string localFileName, out VSSItem item)
+        public bool PushFile(string vssDir, string localDir, string localFileName, out VSSItem item)
         {
-            if(!PrepareToPushFile(vssFolder, localFolder, localFileName))
+            if(!PrepareToPushFile(vssDir, localDir, localFileName))
             {
                 item = null;
                 return false;
             }
 
-            string vssPath = $"{vssFolder}/{localFileName}";
-            string localPath = Path.Combine(localFolder, localFileName);
+            string vssPath = $"{vssDir}/{localFileName}";
+            string localPath = Path.Combine(localDir, localFileName);
 
             try
             {
@@ -334,8 +334,8 @@ namespace PatchLoader
                 }
                 else
                 {
-                    IVSSItem folder = VSSDB.get_VSSItem(vssFolder, false);
-                    item = folder.Add(localPath);
+                    IVSSItem dir = VSSDB.get_VSSItem(vssDir, false);
+                    item = dir.Add(localPath);
                     Pin(item, item.VersionNumber);
                 }
             }
@@ -369,22 +369,50 @@ namespace PatchLoader
             return true;
         }
 
-        public void CreateStructure(string folderName, string remoteRoot, string subdir, List<string> repStructure)
+        public void CreateStructure(string dirName, string remoteRoot, string subdir, List<string> repStructure)
         {
-            VSSItem repFolder = VSSDB.get_VSSItem(remoteRoot);
-            VSSItem scriptsFolder = repFolder.Child[subdir];
+            VSSItem repDir = VSSDB.get_VSSItem(remoteRoot);
+            VSSItem repSubdir = repDir.Child[subdir];
 
-            VSSItem newFolder = scriptsFolder.NewSubproject(folderName);
+            bool found = false;
+            foreach (VSSItem currRemoteSubDir in repSubdir.Items)
+            {
+                if (currRemoteSubDir.Type == 0 && currRemoteSubDir.Name.Equals(dirName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                repSubdir.NewSubproject(dirName);
+            }
+
+            VSSItem newDir = repSubdir.NewSubproject(dirName);
 
             foreach(string path in repStructure)
             {
-                string[] folders = path.Split('/');
+                string[] dirs = path.Split('/');
 
-                VSSItem currFolder = newFolder;
+                VSSItem currDir = newDir;
 
-                foreach (string folder in folders)
+                foreach (string dir in dirs)
                 {
-                    currFolder = currFolder.NewSubproject(folder);
+                    found = false;
+                    foreach (VSSItem currSubDir in currDir.Items)
+                    {
+                        if (currSubDir.Type == 0 && currSubDir.Name.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        currDir = currDir.NewSubproject(dir);
+                    }
                 }
             }
 
@@ -457,15 +485,7 @@ namespace PatchLoader
                     {
                         bool createDir = false;
                         //первой папкой должна быть папка создания скриптов или информатики
-                        if (level == 0 &&
-                            (localSubDir.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase) ||
-                             localSubDir.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase))
-                           ||
-                           //папка после папки источника должна совпадать с доступными путями
-
-                           //!!! Ошибка. Сейчас смотрим тупо по уровням, а надо проверять путь
-                           level > 1 &&
-                           (PatchUtils.IsAcceptableDir(localSubDir, scriptsSubdir, patchDir,  scriptsAcceptableRemotePathes)) ||
+                        if (PatchUtils.IsAcceptableDir(localSubDir, scriptsSubdir, patchDir,  scriptsAcceptableRemotePathes) ||
                             PatchUtils.IsAcceptableDir(localSubDir, infaSubdir, patchDir, infaAcceptableRemotePathes))
                         {
                             createDir = true;
@@ -513,9 +533,9 @@ namespace PatchLoader
             }
         }
 
-        public void CreateLink(IVSSItem sourceItem, IVSSItem destFolder)
+        public void CreateLink(IVSSItem sourceItem, IVSSItem destDir)
         {
-            destFolder.Share((VSSItem)sourceItem, destFolder.Name, (int)VSSFlags.VSSFLAG_GETNO);
+            destDir.Share((VSSItem)sourceItem, destDir.Name, (int)VSSFlags.VSSFLAG_GETNO);
         }
 
         public void Close()

@@ -40,8 +40,8 @@
             this.AddInRepDir = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.AddToPatch = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.CreateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.CreateScriptsRepositoryFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.CreateInfaRepositoryFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateScriptsRepositoryDirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateInfaRepositoryDirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -142,25 +142,25 @@
             // CreateToolStripMenuItem
             // 
             this.CreateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CreateScriptsRepositoryFolderToolStripMenuItem,
-            this.CreateInfaRepositoryFolderToolStripMenuItem});
+            this.CreateScriptsRepositoryDirToolStripMenuItem,
+            this.CreateInfaRepositoryDirToolStripMenuItem});
             this.CreateToolStripMenuItem.Name = "CreateToolStripMenuItem";
             this.CreateToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.CreateToolStripMenuItem.Text = "Создать";
             // 
-            // CreateScriptsRepositoryFolderToolStripMenuItem
+            // CreateScriptsRepositoryDirToolStripMenuItem
             // 
-            this.CreateScriptsRepositoryFolderToolStripMenuItem.Name = "CreateScriptsRepositoryFolderToolStripMenuItem";
-            this.CreateScriptsRepositoryFolderToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
-            this.CreateScriptsRepositoryFolderToolStripMenuItem.Text = "Папку скриптов в репозитории";
-            this.CreateScriptsRepositoryFolderToolStripMenuItem.Click += new System.EventHandler(this.CreateScriptsRepositoryFolderToolStripMenuItem_Click);
+            this.CreateScriptsRepositoryDirToolStripMenuItem.Name = "CreateScriptsRepositoryDirToolStripMenuItem";
+            this.CreateScriptsRepositoryDirToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.CreateScriptsRepositoryDirToolStripMenuItem.Text = "Папку скриптов в репозитории";
+            this.CreateScriptsRepositoryDirToolStripMenuItem.Click += new System.EventHandler(this.CreateScriptsRepositoryDirToolStripMenuItem_Click);
             // 
-            // CreateInfaRepositoryFolderToolStripMenuItem
+            // CreateInfaRepositoryDirToolStripMenuItem
             // 
-            this.CreateInfaRepositoryFolderToolStripMenuItem.Name = "CreateInfaRepositoryFolderToolStripMenuItem";
-            this.CreateInfaRepositoryFolderToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
-            this.CreateInfaRepositoryFolderToolStripMenuItem.Text = "Папку информатики в репозитории";
-            this.CreateInfaRepositoryFolderToolStripMenuItem.Click += new System.EventHandler(this.CreateInfaRepositoryFolderToolStripMenuItem_Click);
+            this.CreateInfaRepositoryDirToolStripMenuItem.Name = "CreateInfaRepositoryDirToolStripMenuItem";
+            this.CreateInfaRepositoryDirToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.CreateInfaRepositoryDirToolStripMenuItem.Text = "Папку информатики в репозитории";
+            this.CreateInfaRepositoryDirToolStripMenuItem.Click += new System.EventHandler(this.CreateInfaRepositoryDirToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -200,8 +200,8 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddInRepDir;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddToPatch;
         private System.Windows.Forms.ToolStripMenuItem CreateToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem CreateScriptsRepositoryFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem CreateInfaRepositoryFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CreateScriptsRepositoryDirToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CreateInfaRepositoryDirToolStripMenuItem;
     }
 }
 

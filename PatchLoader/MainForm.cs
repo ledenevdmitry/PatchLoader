@@ -121,7 +121,7 @@ namespace PatchLoader
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
         }
 
-        private void CreateScriptsRepositoryFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CreateScriptsRepositoryDirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnterValueForm evf = new EnterValueForm("Добавление папки скриптов в репозиторий");
             if(evf.ShowDialog() == DialogResult.OK)
@@ -133,7 +133,7 @@ namespace PatchLoader
             }
         }
 
-        private void CreateInfaRepositoryFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CreateInfaRepositoryDirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EnterValueForm evf = new EnterValueForm("Добавление папки информатики в репозиторий");
             if (evf.ShowDialog() == DialogResult.OK)

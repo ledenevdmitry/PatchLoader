@@ -26,10 +26,10 @@ namespace PatchLoader
             return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser, repStructureScripts, repStructureInfa, scriptsSubdir, infaSubdir, repStructureScripts, repStructureInfa);
         }
 
-        public void CreateStructure(string folderName, string subdir, List<string> repScripts)
+        public void CreateStructure(string dirName, string subdir, List<string> repScripts)
         {
             VSS vss = new VSS(remoteBaseLocation, "Dmitry");
-            vss.CreateStructure(folderName, remoteRoot, subdir, repScripts);
+            vss.CreateStructure(dirName, remoteRoot, subdir, repScripts);
         }
 
 

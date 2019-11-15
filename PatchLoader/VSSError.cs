@@ -22,7 +22,7 @@ namespace PatchLoader
                 case -10168: return "Invalid filename: " + name1;
                 case -10170: return "Invalid access code (bad parameter)";
                 case -10171: return "Invalid DOS path: " + name1;
-                case -10172: return "Folder " + name1 + " is in use";
+                case -10172: return "Dir " + name1 + " is in use";
                 case -10173: return "Disk full";
                 case -10175: return "File " + name1 + " already exists";
                 case -10176: return "File " + name1 + "is locked";
