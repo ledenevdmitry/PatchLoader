@@ -120,5 +120,29 @@ namespace PatchLoader
 
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
         }
+
+        private void CreateScriptsRepositoryFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnterValueForm evf = new EnterValueForm("Добавление папки скриптов в репозиторий");
+            if(evf.ShowDialog() == DialogResult.OK)
+            {
+                patchUtils.CreateStructure(
+                    evf.Value,
+                    Properties.Settings.Default.ScriptsSubdir,
+                    Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
+            }
+        }
+
+        private void CreateInfaRepositoryFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnterValueForm evf = new EnterValueForm("Добавление папки информатики в репозиторий");
+            if (evf.ShowDialog() == DialogResult.OK)
+            {
+                patchUtils.CreateStructure(
+                    evf.Value,
+                    Properties.Settings.Default.InfaSubdir,
+                    Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
+            }
+        }
     }
 }

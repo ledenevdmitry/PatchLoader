@@ -39,6 +39,9 @@
             this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AddInRepDir = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.AddToPatch = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.CreateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateScriptsRepositoryFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateInfaRepositoryFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -46,6 +49,7 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CreateToolStripMenuItem,
             this.SettingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -135,6 +139,29 @@
             this.AddToPatch.HeaderText = "Добавить в патч";
             this.AddToPatch.Name = "AddToPatch";
             // 
+            // CreateToolStripMenuItem
+            // 
+            this.CreateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CreateScriptsRepositoryFolderToolStripMenuItem,
+            this.CreateInfaRepositoryFolderToolStripMenuItem});
+            this.CreateToolStripMenuItem.Name = "CreateToolStripMenuItem";
+            this.CreateToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.CreateToolStripMenuItem.Text = "Создать";
+            // 
+            // CreateScriptsRepositoryFolderToolStripMenuItem
+            // 
+            this.CreateScriptsRepositoryFolderToolStripMenuItem.Name = "CreateScriptsRepositoryFolderToolStripMenuItem";
+            this.CreateScriptsRepositoryFolderToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.CreateScriptsRepositoryFolderToolStripMenuItem.Text = "Папку скриптов в репозитории";
+            this.CreateScriptsRepositoryFolderToolStripMenuItem.Click += new System.EventHandler(this.CreateScriptsRepositoryFolderToolStripMenuItem_Click);
+            // 
+            // CreateInfaRepositoryFolderToolStripMenuItem
+            // 
+            this.CreateInfaRepositoryFolderToolStripMenuItem.Name = "CreateInfaRepositoryFolderToolStripMenuItem";
+            this.CreateInfaRepositoryFolderToolStripMenuItem.Size = new System.Drawing.Size(272, 22);
+            this.CreateInfaRepositoryFolderToolStripMenuItem.Text = "Папку информатики в репозитории";
+            this.CreateInfaRepositoryFolderToolStripMenuItem.Click += new System.EventHandler(this.CreateInfaRepositoryFolderToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -172,6 +199,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddInRepDir;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddToPatch;
+        private System.Windows.Forms.ToolStripMenuItem CreateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CreateScriptsRepositoryFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CreateInfaRepositoryFolderToolStripMenuItem;
     }
 }
 

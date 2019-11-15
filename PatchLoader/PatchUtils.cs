@@ -23,11 +23,15 @@ namespace PatchLoader
         public bool PushPatch(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureScripts, List<string> repStructureInfa)
         {
             VSS vss = new VSS(remoteBaseLocation, "Dmitry");
-            return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser,
-                Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList(),
-                Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList(),
-                scriptsSubdir, infaSubdir, repStructureScripts, repStructureInfa);
+            return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser, repStructureScripts, repStructureInfa, scriptsSubdir, infaSubdir, repStructureScripts, repStructureInfa);
         }
+
+        public void CreateStructure(string folderName, string subdir, List<string> repScripts)
+        {
+            VSS vss = new VSS(remoteBaseLocation, "Dmitry");
+            vss.CreateStructure(folderName, remoteRoot, subdir, repScripts);
+        }
+
 
         public static bool IsAcceptableDir(DirectoryInfo dir, string scriptsOrInfaDir, DirectoryInfo patchDir, List<string> acceptableRemotePathes)
         {/*

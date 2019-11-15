@@ -369,14 +369,24 @@ namespace PatchLoader
             return true;
         }
 
-        public void CreateScriptStructure(string folderName, string remoteRoot, string scriptsSubdir, List<string> repStructureScripts)
+        public void CreateStructure(string folderName, string remoteRoot, string subdir, List<string> repStructure)
         {
             VSSItem repFolder = VSSDB.get_VSSItem(remoteRoot);
-            VSSItem scriptsFolder = repFolder.Child[scriptsSubdir];
+            VSSItem scriptsFolder = repFolder.Child[subdir];
 
             VSSItem newFolder = scriptsFolder.NewSubproject(folderName);
 
+            foreach(string path in repStructure)
+            {
+                string[] folders = path.Split('/');
 
+                VSSItem currFolder = newFolder;
+
+                foreach (string folder in folders)
+                {
+                    currFolder = currFolder.NewSubproject(folder);
+                }
+            }
 
         }
 
