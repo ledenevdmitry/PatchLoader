@@ -51,6 +51,8 @@
             this.LbScriptsSubdir = new System.Windows.Forms.Label();
             this.TbInfaSubdir = new System.Windows.Forms.TextBox();
             this.LbInfaSubdir = new System.Windows.Forms.Label();
+            this.TbInstallerPath = new System.Windows.Forms.TextBox();
+            this.LbInstallerPath = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LbRemoteBase
@@ -91,7 +93,7 @@
             this.LbLinkDir.Location = new System.Drawing.Point(344, 38);
             this.LbLinkDir.Name = "LbLinkDir";
             this.LbLinkDir.Size = new System.Drawing.Size(93, 13);
-            this.LbLinkDir.TabIndex = 4;
+            this.LbLinkDir.TabIndex = 16;
             this.LbLinkDir.Text = "Папка с патчами";
             // 
             // TbLinkDir
@@ -99,14 +101,14 @@
             this.TbLinkDir.Location = new System.Drawing.Point(466, 35);
             this.TbLinkDir.Name = "TbLinkDir";
             this.TbLinkDir.Size = new System.Drawing.Size(197, 20);
-            this.TbLinkDir.TabIndex = 5;
+            this.TbLinkDir.TabIndex = 17;
             // 
             // BtSubmit
             // 
             this.BtSubmit.Location = new System.Drawing.Point(15, 290);
             this.BtSubmit.Name = "BtSubmit";
             this.BtSubmit.Size = new System.Drawing.Size(657, 35);
-            this.BtSubmit.TabIndex = 6;
+            this.BtSubmit.TabIndex = 24;
             this.BtSubmit.Text = "Применить";
             this.BtSubmit.UseVisualStyleBackColor = true;
             this.BtSubmit.Click += new System.EventHandler(this.BtSubmit_Click);
@@ -118,7 +120,7 @@
             this.LbToRep.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbToRep.Name = "LbToRep";
             this.LbToRep.Size = new System.Drawing.Size(112, 39);
-            this.LbToRep.TabIndex = 7;
+            this.LbToRep.TabIndex = 8;
             this.LbToRep.Text = "Добавлять в общую папку (регулярное выражение)";
             // 
             // TbToRep
@@ -127,7 +129,7 @@
             this.TbToRep.Multiline = true;
             this.TbToRep.Name = "TbToRep";
             this.TbToRep.Size = new System.Drawing.Size(197, 52);
-            this.TbToRep.TabIndex = 8;
+            this.TbToRep.TabIndex = 9;
             // 
             // TbToPatch
             // 
@@ -135,7 +137,7 @@
             this.TbToPatch.Multiline = true;
             this.TbToPatch.Name = "TbToPatch";
             this.TbToPatch.Size = new System.Drawing.Size(197, 52);
-            this.TbToPatch.TabIndex = 10;
+            this.TbToPatch.TabIndex = 11;
             // 
             // LbToPatch
             // 
@@ -144,7 +146,7 @@
             this.LbToPatch.MaximumSize = new System.Drawing.Size(120, 0);
             this.LbToPatch.Name = "LbToPatch";
             this.LbToPatch.Size = new System.Drawing.Size(100, 39);
-            this.LbToPatch.TabIndex = 9;
+            this.LbToPatch.TabIndex = 10;
             this.LbToPatch.Text = "Добавлять в патч (регулярное выражение)";
             // 
             // TbNotToPatch
@@ -153,7 +155,7 @@
             this.TbNotToPatch.Multiline = true;
             this.TbNotToPatch.Name = "TbNotToPatch";
             this.TbNotToPatch.Size = new System.Drawing.Size(197, 52);
-            this.TbNotToPatch.TabIndex = 14;
+            this.TbNotToPatch.TabIndex = 21;
             // 
             // LbNotToPatch
             // 
@@ -162,7 +164,7 @@
             this.LbNotToPatch.MaximumSize = new System.Drawing.Size(120, 0);
             this.LbNotToPatch.Name = "LbNotToPatch";
             this.LbNotToPatch.Size = new System.Drawing.Size(114, 39);
-            this.LbNotToPatch.TabIndex = 13;
+            this.LbNotToPatch.TabIndex = 20;
             this.LbNotToPatch.Text = "Не добавлять в патч (регулярное выражение)";
             // 
             // TbNotToRep
@@ -171,7 +173,7 @@
             this.TbNotToRep.Multiline = true;
             this.TbNotToRep.Name = "TbNotToRep";
             this.TbNotToRep.Size = new System.Drawing.Size(197, 52);
-            this.TbNotToRep.TabIndex = 12;
+            this.TbNotToRep.TabIndex = 19;
             // 
             // LbNotToRep
             // 
@@ -180,7 +182,7 @@
             this.LbNotToRep.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbNotToRep.Name = "LbNotToRep";
             this.LbNotToRep.Size = new System.Drawing.Size(126, 39);
-            this.LbNotToRep.TabIndex = 11;
+            this.LbNotToRep.TabIndex = 18;
             this.LbNotToRep.Text = "Не добавлять в общую папку (регулярное выражение)";
             // 
             // LbRepStructureScripts
@@ -190,7 +192,7 @@
             this.LbRepStructureScripts.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbRepStructureScripts.Name = "LbRepStructureScripts";
             this.LbRepStructureScripts.Size = new System.Drawing.Size(103, 39);
-            this.LbRepStructureScripts.TabIndex = 15;
+            this.LbRepStructureScripts.TabIndex = 12;
             this.LbRepStructureScripts.Text = "Структура папок в репозитории для скриптов";
             // 
             // TbRepStructureScripts
@@ -200,7 +202,7 @@
             this.TbRepStructureScripts.Name = "TbRepStructureScripts";
             this.TbRepStructureScripts.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbRepStructureScripts.Size = new System.Drawing.Size(197, 65);
-            this.TbRepStructureScripts.TabIndex = 16;
+            this.TbRepStructureScripts.TabIndex = 13;
             // 
             // TbRepStructureInfa
             // 
@@ -209,7 +211,7 @@
             this.TbRepStructureInfa.Name = "TbRepStructureInfa";
             this.TbRepStructureInfa.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbRepStructureInfa.Size = new System.Drawing.Size(197, 65);
-            this.TbRepStructureInfa.TabIndex = 18;
+            this.TbRepStructureInfa.TabIndex = 23;
             // 
             // LbRepStructureInfa
             // 
@@ -218,7 +220,7 @@
             this.LbRepStructureInfa.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbRepStructureInfa.Name = "LbRepStructureInfa";
             this.LbRepStructureInfa.Size = new System.Drawing.Size(103, 39);
-            this.LbRepStructureInfa.TabIndex = 17;
+            this.LbRepStructureInfa.TabIndex = 22;
             this.LbRepStructureInfa.Text = "Структура папок в репозитории для информатики";
             // 
             // TbScriptsSubdir
@@ -226,7 +228,7 @@
             this.TbScriptsSubdir.Location = new System.Drawing.Point(69, 64);
             this.TbScriptsSubdir.Name = "TbScriptsSubdir";
             this.TbScriptsSubdir.Size = new System.Drawing.Size(86, 20);
-            this.TbScriptsSubdir.TabIndex = 20;
+            this.TbScriptsSubdir.TabIndex = 5;
             // 
             // LbScriptsSubdir
             // 
@@ -234,7 +236,7 @@
             this.LbScriptsSubdir.Location = new System.Drawing.Point(12, 67);
             this.LbScriptsSubdir.Name = "LbScriptsSubdir";
             this.LbScriptsSubdir.Size = new System.Drawing.Size(51, 13);
-            this.LbScriptsSubdir.TabIndex = 19;
+            this.LbScriptsSubdir.TabIndex = 4;
             this.LbScriptsSubdir.Text = "Скрипты";
             // 
             // TbInfaSubdir
@@ -242,7 +244,7 @@
             this.TbInfaSubdir.Location = new System.Drawing.Point(245, 64);
             this.TbInfaSubdir.Name = "TbInfaSubdir";
             this.TbInfaSubdir.Size = new System.Drawing.Size(86, 20);
-            this.TbInfaSubdir.TabIndex = 22;
+            this.TbInfaSubdir.TabIndex = 7;
             // 
             // LbInfaSubdir
             // 
@@ -250,14 +252,32 @@
             this.LbInfaSubdir.Location = new System.Drawing.Point(161, 67);
             this.LbInfaSubdir.Name = "LbInfaSubdir";
             this.LbInfaSubdir.Size = new System.Drawing.Size(78, 13);
-            this.LbInfaSubdir.TabIndex = 21;
+            this.LbInfaSubdir.TabIndex = 6;
             this.LbInfaSubdir.Text = "Информатика";
+            // 
+            // TbInstallerPath
+            // 
+            this.TbInstallerPath.Location = new System.Drawing.Point(466, 9);
+            this.TbInstallerPath.Name = "TbInstallerPath";
+            this.TbInstallerPath.Size = new System.Drawing.Size(197, 20);
+            this.TbInstallerPath.TabIndex = 15;
+            // 
+            // LbInstallerPath
+            // 
+            this.LbInstallerPath.AutoSize = true;
+            this.LbInstallerPath.Location = new System.Drawing.Point(344, 12);
+            this.LbInstallerPath.Name = "LbInstallerPath";
+            this.LbInstallerPath.Size = new System.Drawing.Size(113, 13);
+            this.LbInstallerPath.TabIndex = 14;
+            this.LbInstallerPath.Text = "Путь до PatchInstaller";
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(681, 337);
+            this.Controls.Add(this.TbInstallerPath);
+            this.Controls.Add(this.LbInstallerPath);
             this.Controls.Add(this.TbInfaSubdir);
             this.Controls.Add(this.LbInfaSubdir);
             this.Controls.Add(this.TbScriptsSubdir);
@@ -313,5 +333,7 @@
         private System.Windows.Forms.Label LbScriptsSubdir;
         private System.Windows.Forms.TextBox TbInfaSubdir;
         private System.Windows.Forms.Label LbInfaSubdir;
+        private System.Windows.Forms.TextBox TbInstallerPath;
+        private System.Windows.Forms.Label LbInstallerPath;
     }
 }

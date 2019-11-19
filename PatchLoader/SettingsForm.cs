@@ -26,6 +26,7 @@ namespace PatchLoader
             TbInfaSubdir.Text = Properties.Settings.Default.InfaSubdir;
             TbRepStructureScripts.Text = Properties.Settings.Default.RepStructureScripts;
             TbRepStructureInfa.Text = Properties.Settings.Default.RepStructureInfa;
+            TbInstallerPath.Text = Properties.Settings.Default.PatchInstallerPath;
         }
 
         private void BtSubmit_Click(object sender, EventArgs e)
@@ -43,6 +44,7 @@ namespace PatchLoader
             Properties.Settings.Default.InfaSubdir = TbInfaSubdir.Text;
             Properties.Settings.Default.RepStructureScripts = TbRepStructureScripts.Text;
             Properties.Settings.Default.RepStructureInfa = TbRepStructureInfa.Text;
+            Properties.Settings.Default.PatchInstallerPath = TbInstallerPath.Text;
 
             Properties.Settings.Default.Save();
 

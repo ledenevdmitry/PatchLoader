@@ -160,5 +160,25 @@ namespace PatchLoader
                     Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
             }
         }
+
+        private void BtInstallToTest_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(TbPatchLocation.Text))
+            {
+                string fileScPath = Path.Combine(TbPatchLocation.Text, "file_sc.txt");
+                if (File.Exists(fileScPath))
+                {
+                    System.Diagnostics.Process.Start("CMD.exe", $"/C \"{Properties.Settings.Default.PatchInstallerPath}\" STDEV11 1 \"{fileScPath}\" 1");
+                }
+                else
+                {
+                    MessageBox.Show("Файл сценария не найден!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

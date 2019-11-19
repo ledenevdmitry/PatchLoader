@@ -167,5 +167,17 @@ namespace PatchLoader.Properties {
                 this["RepStructureInfa"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PatchInstallerPath {
+            get {
+                return ((string)(this["PatchInstallerPath"]));
+            }
+            set {
+                this["PatchInstallerPath"] = value;
+            }
+        }
     }
 }

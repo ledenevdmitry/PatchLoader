@@ -42,6 +42,7 @@
             this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AddInRepDir = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.AddToPatch = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.BtInstallToTest = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -115,7 +116,7 @@
             // 
             // BtPush
             // 
-            this.BtPush.Location = new System.Drawing.Point(15, 307);
+            this.BtPush.Location = new System.Drawing.Point(131, 307);
             this.BtPush.Name = "BtPush";
             this.BtPush.Size = new System.Drawing.Size(110, 23);
             this.BtPush.TabIndex = 4;
@@ -164,11 +165,22 @@
             this.AddToPatch.Name = "AddToPatch";
             this.AddToPatch.ReadOnly = true;
             // 
+            // BtInstallToTest
+            // 
+            this.BtInstallToTest.Location = new System.Drawing.Point(15, 307);
+            this.BtInstallToTest.Name = "BtInstallToTest";
+            this.BtInstallToTest.Size = new System.Drawing.Size(110, 23);
+            this.BtInstallToTest.TabIndex = 8;
+            this.BtInstallToTest.Text = "Накатить на тест";
+            this.BtInstallToTest.UseVisualStyleBackColor = true;
+            this.BtInstallToTest.Click += new System.EventHandler(this.BtInstallToTest_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(685, 342);
+            this.Controls.Add(this.BtInstallToTest);
             this.Controls.Add(this.DgvFileList);
             this.Controls.Add(this.LbFilesList);
             this.Controls.Add(this.BtPush);
@@ -204,6 +216,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddInRepDir;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddToPatch;
+        private System.Windows.Forms.Button BtInstallToTest;
     }
 }
 

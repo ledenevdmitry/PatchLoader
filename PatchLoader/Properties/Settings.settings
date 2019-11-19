@@ -53,5 +53,8 @@ Transformations
 User-Defined Function
 Workflows</Value>
     </Setting>
+    <Setting Name="PatchInstallerPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
