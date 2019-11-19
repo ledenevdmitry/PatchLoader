@@ -266,6 +266,29 @@ namespace PatchLoader
             objProject.Share(objOldItem, "", (int)VSSFlags.VSSFLAG_GETNO);
         }
 
+        private bool IsCheckedOutByAnotherUser(string vssDir, string localDir, string localFileName)
+        {
+            string fileName = $"{vssDir}/{localFileName}";
+            try
+            {
+                IVSSItem item = VSSDB.get_VSSItem(fileName, false);
+
+                if (item.IsCheckedOut == 1)
+                {
+                    return true;
+                }
+            }
+            catch (System.Runtime.InteropServices.COMException exc)
+            {
+                //file not found
+                if (!IsFileNotFoundError(exc))
+                {
+                    throw exc;
+                }
+            }
+            return false;
+        }
+
         //Unpin + Checkout + Exception handling
         private bool PrepareToPushFile(string vssDir, string localDir, string localFileName)
         {
@@ -369,6 +392,16 @@ namespace PatchLoader
             return true;
         }
 
+        public string CheckDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath)
+        {
+            VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
+            string res = "";
+
+            CheckDirRec(localDir, patchFiles, remoteDir, ref res);
+
+            return res;
+        }
+
         public void CreateStructure(string dirName, string remoteRoot, string subdir, List<string> repStructure)
         {
             VSSItem repDir = VSSDB.get_VSSItem(remoteRoot);
@@ -414,6 +447,39 @@ namespace PatchLoader
                         currDir = currDir.NewSubproject(dir);
                     }
                 }
+            }
+
+        }
+
+        private void CheckDirRec(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, VSSItem remoteDir, ref string res)
+        {
+            foreach (FileInfoWithPatchOptions fi in patchFiles)
+            {
+                //определяем, что мы находимся на нужном уровне
+                if (fi.FileInfo.Directory.FullName.Equals(localDir.FullName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (fi.AddInRepDir)
+                    {
+                        if (remoteDir != null && IsCheckedOutByAnotherUser(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name))
+                        {
+                            res += $"Файл checked out другим пользователем {remoteDir.Spec}/{fi.FileInfo.Name}" + Environment.NewLine;
+                        }
+                    }
+                }
+            }
+
+            foreach (DirectoryInfo localSubDir in localDir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+            {
+                VSSItem remoteSubDir = null;
+                foreach (VSSItem currSubDir in remoteDir.Items)
+                {
+                    if(currSubDir.Name.Equals(localSubDir.Name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        remoteSubDir = currSubDir;
+                        break;
+                    }
+                }
+                CheckDirRec(localSubDir, patchFiles, remoteSubDir, ref res);
             }
 
         }

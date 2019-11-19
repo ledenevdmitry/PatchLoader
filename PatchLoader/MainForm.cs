@@ -101,6 +101,24 @@ namespace PatchLoader
 
         }
 
+        private bool CheckPatch(DirectoryInfo patchDir, List<FileInfoWithPatchOptions> patchFiles)
+        {
+            bool res = true;
+            string errLog = patchUtils.CheckPatch(patchDir, patchFiles);
+            if (errLog != "")
+            {
+                if (MessageBox.Show(errLog, "Ошибки при проверке", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1) == DialogResult.Retry)
+                {
+                    res = CheckPatch(patchDir, patchFiles);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return res;
+        }
+
         private void BtPush_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(TbPatchLocation.Text))
@@ -117,15 +135,15 @@ namespace PatchLoader
                             (bool)x.Cells[2].Value))
                     .ToList();
 
-                if (!patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser,
-                    Properties.Settings.Default.ScriptsSubdir,
-                    Properties.Settings.Default.InfaSubdir,
-                    Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList(),
-                    Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()))
+                if (CheckPatch(patchDir, patchFiles) && !patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
                 {
                     ErrorForm ef = new ErrorForm("Файлы checked out другим пользователем. Невозможно добавить:", string.Join(Environment.NewLine, vssPathCheckedOutToAnotherUser));
                     ef.ShowDialog();
                 }
+            }
+            else
+            {
+                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -135,6 +153,7 @@ namespace PatchLoader
             DgvFileList.Height = ClientRectangle.Height - DgvFileList.Top - BtPush.Height - 2 * 8;
 
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
+            BtInstallToTest.Top = ClientRectangle.Height - BtInstallToTest.Height - 8;
         }
 
         private void CreateScriptsRepositoryDirToolStripMenuItem_Click(object sender, EventArgs e)
