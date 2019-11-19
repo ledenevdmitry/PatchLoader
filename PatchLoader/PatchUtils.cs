@@ -9,9 +9,9 @@ namespace PatchLoader
 {
     class PatchUtils
     {
-        private string remoteRoot;
-        private string remoteLinkRoot;
-        private string remoteBaseLocation;
+        private readonly string remoteRoot;
+        private readonly string remoteLinkRoot;
+        private readonly string remoteBaseLocation;
 
         public PatchUtils(string remoteRoot, string remoteLinkRoot, string remoteBaseLocation)
         {
@@ -23,7 +23,7 @@ namespace PatchLoader
         public bool PushPatch(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, out List<string> vssPathCheckedOutToAnotherUser, string scriptsSubdir, string infaSubdir, List<string> repStructureScripts, List<string> repStructureInfa)
         {
             VSS vss = new VSS(remoteBaseLocation, "Dmitry");
-            return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser, repStructureScripts, repStructureInfa, scriptsSubdir, infaSubdir, repStructureScripts, repStructureInfa);
+            return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser);
         }
 
         public void CreateStructure(string dirName, string subdir, List<string> repScripts)
@@ -33,26 +33,27 @@ namespace PatchLoader
         }
 
 
-        public static bool IsAcceptableDir(DirectoryInfo dir, string scriptsOrInfaDir, DirectoryInfo patchDir, List<string> acceptableRemotePathes)
-        {/*
-            return acceptableRemotePathes
-                .Select(x => Path.Combine(patchDir.FullName, scriptsOrInfaDir, x.Replace('/', '\\')))
-                .Where(x => x.Equals(dir.FullName, StringComparison.InvariantCultureIgnoreCase)).Count() > 0;
-*/
+        public static bool IsAcceptableDir(DirectoryInfo dir, string scriptsOrInfaDir, string schema, DirectoryInfo patchDir, List<string> acceptableRemotePathes)
+        {
             foreach(string acceptablePath in acceptableRemotePathes)
             {
                 List<string> subpathes = new List<string>();
-                for(int i = 0; i != -1; i += acceptablePath.IndexOf('/', i))
+
+                string [] folders = acceptablePath.Split('/');
+                string aggFolder = "";
+
+                foreach(string folder in folders)
                 {
-                    if (i > 0)
-                    {
-                        subpathes.Add(acceptablePath.Substring(0, i));
-                    }
+                    aggFolder += folder;
+                    subpathes.Add(aggFolder);
+
+                    aggFolder += '/';
                 }
+
                 
                 foreach(string subpath in subpathes)
                 {
-                    if (Path.Combine(patchDir.FullName, scriptsOrInfaDir, subpath.Replace('/', '\\')).Equals(dir.FullName, StringComparison.InvariantCultureIgnoreCase))
+                    if (Path.Combine(patchDir.FullName, scriptsOrInfaDir, schema, subpath.Replace('/', '\\')).Equals(dir.FullName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return true;
                     }

@@ -343,7 +343,7 @@ namespace PatchLoader
             return true;
         }
 
-        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser, List<string> scriptsAcceptableRemotePathes, List<string> infaAcceptableRemotePathes, string scriptsSubdir, string infaSubdir, List<string> repStructureScripts, List<string> repStructureInfa)
+        public bool PushDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath, string linkPath, out List<string> vssPathCheckedOutToAnotherUser)
         {
             VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
             VSSItem linkRootDir = VSSDB.get_VSSItem(linkPath);
@@ -359,7 +359,7 @@ namespace PatchLoader
 
             vssPathCheckedOutToAnotherUser = new List<string>();
 
-            PushDirRec(localDir, localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsAcceptableRemotePathes, infaAcceptableRemotePathes, 0);
+            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser);
 
             if (vssPathCheckedOutToAnotherUser.Count > 0)
             {
@@ -420,16 +420,11 @@ namespace PatchLoader
 
         public void PushDirRec
         (
-            DirectoryInfo patchDir, 
             DirectoryInfo localDir, 
             List<FileInfoWithPatchOptions> patchFiles, 
-            VSSItem remoteDir, VSSItem linkDir,
-            List<string> vssPathCheckedOutToAnotherUser, 
-            string scriptsSubdir, 
-            string infaSubdir, 
-            List<string> scriptsAcceptableRemotePathes, 
-            List<string> infaAcceptableRemotePathes,
-            int level
+            VSSItem remoteDir, 
+            VSSItem linkDir,
+            List<string> vssPathCheckedOutToAnotherUser
         )
         {
             foreach (FileInfoWithPatchOptions fi in patchFiles)
@@ -467,7 +462,7 @@ namespace PatchLoader
                 //если там не было папки, добавляем ее
                 if (patchFiles.Where(x => x.AddInRepDir)
                     .Select(x => x.FileInfo.Directory)
-                    .Where(x => x.FullName.StartsWith(localSubDir.FullName, StringComparison.InvariantCulture))
+                    .Where(x => (x.FullName + "\\").StartsWith(localSubDir.FullName + "\\", StringComparison.InvariantCulture))
                     .Count() > 0)
                 {
                     bool found = false;
@@ -481,40 +476,10 @@ namespace PatchLoader
                         }
                     }
 
+                    //все проверки адекватности пути должны быть перенесены на класс формы
                     if (!found)
                     {
-                        bool createDir = false;
-                        //первой папкой должна быть папка создания скриптов или информатики
-                        if (PatchUtils.IsAcceptableDir(localSubDir, scriptsSubdir, patchDir,  scriptsAcceptableRemotePathes) ||
-                            PatchUtils.IsAcceptableDir(localSubDir, infaSubdir, patchDir, infaAcceptableRemotePathes))
-                        {
-                            createDir = true;
-                        }
-                        else if(level == 1)
-                        {
-                            if (localSubDir.Parent.Name.Equals(scriptsSubdir, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                EnterValueForm evf = new EnterValueForm("Создание новой папки информатики для источника", localSubDir.Name);
-                                if(evf.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                                {
-                                    createDir = true;
-                                }
-                            }
-
-                            if (localSubDir.Parent.Name.Equals(infaSubdir, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                EnterValueForm evf = new EnterValueForm("Создание новой папки скриптов для источника", localSubDir.Name);
-                                if (evf.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                                {
-                                    createDir = true;
-                                }
-                            }
-                        }
-
-                        if (createDir)
-                        {
-                            remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
-                        }
+                        remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
                     }
 
                 }
@@ -523,13 +488,13 @@ namespace PatchLoader
                 //создаем подпапку
                 if (patchFiles.Where(x => x.AddToPatch)
                     .Select(x => x.FileInfo.Directory)
-                    .Where(x => x.FullName.StartsWith(localSubDir.FullName, StringComparison.InvariantCulture))
+                    .Where(x => (x.FullName + "\\").StartsWith((localSubDir.FullName + "\\"), StringComparison.InvariantCulture))
                     .Count() > 0)
                 {
                     linkSubDir = linkDir.NewSubproject(localSubDir.Name);
                 }
 
-                PushDirRec(patchDir, localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser, scriptsSubdir, infaSubdir, scriptsAcceptableRemotePathes, infaAcceptableRemotePathes, level + 1);
+                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser);
             }
         }
 
