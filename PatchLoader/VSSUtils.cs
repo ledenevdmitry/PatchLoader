@@ -417,12 +417,15 @@ namespace PatchLoader
                 }
             }
 
-            if (!found)
+            VSSItem newDir;
+            if (found)
             {
-                repSubdir.NewSubproject(dirName);
+                newDir = repSubdir.Child[dirName];
             }
-
-            VSSItem newDir = repSubdir.NewSubproject(dirName);
+            else
+            {
+                newDir = repSubdir.NewSubproject(dirName);
+            }
 
             foreach(string path in repStructure)
             {

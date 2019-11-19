@@ -71,6 +71,8 @@ namespace PatchLoader
                     currRow.Cells[2].Value = addToPatch;
                 }
             }
+            BtInstallToTest.Enabled = BtPush.Enabled = BtCreateFileSc.Enabled = true;
+            ResizeForm();
         }
 
         private void BtRefreshList_Click(object sender, EventArgs e)
@@ -137,7 +139,8 @@ namespace PatchLoader
             string errLog = patchUtils.CheckPatch(patchDir, patchFiles);
             if (errLog != "")
             {
-                if (MessageBox.Show(errLog, "Ошибки при проверке", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1) == DialogResult.Retry)
+                ErrorForm ef = new ErrorForm("Ошибки при проверке", errLog);
+                if (ef.ShowDialog() == DialogResult.Retry)
                 {
                     res = CheckPatch(patchDir, patchFiles);
                 }
@@ -165,10 +168,17 @@ namespace PatchLoader
                             (bool)x.Cells[2].Value))
                     .ToList();
 
-                if (CheckPatch(patchDir, patchFiles) && !patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
+                if (CheckPatch(patchDir, patchFiles))
                 {
-                    ErrorForm ef = new ErrorForm("Файлы checked out другим пользователем. Невозможно добавить:", string.Join(Environment.NewLine, vssPathCheckedOutToAnotherUser));
-                    ef.ShowDialog();
+                    if (patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
+                    {
+                        MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        EnterValueForm ef = new EnterValueForm("Файлы checked out другим пользователем. Невозможно добавить:", string.Join(Environment.NewLine, vssPathCheckedOutToAnotherUser));
+                        ef.ShowDialog();
+                    }
                 }
             }
             else
@@ -184,12 +194,14 @@ namespace PatchLoader
 
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
             BtInstallToTest.Top = ClientRectangle.Height - BtInstallToTest.Height - 8;
+            BtCreateFileSc.Top = ClientRectangle.Height - BtCreateFileSc.Height - 8;
 
             BtRefreshList.Left = ClientRectangle.Width - BtRefreshList.Width - 8;
             BtPatchLocation.Left = BtRefreshList.Left - BtRefreshList.Width - 8;
             TbPatchLocation.Width = BtPatchLocation.Left - 8 - TbPatchLocation.Left;
 
-            DgvFileList.Columns[0].Width = DgvFileList.Width - DgvFileList.Columns[1].Width - DgvFileList.Columns[2].Width - 8;
+            bool isVerticalScrollVisible = DgvFileList.Controls.OfType<VScrollBar>().First().Visible;
+            DgvFileList.Columns[0].Width = DgvFileList.Width - DgvFileList.Columns[1].Width - DgvFileList.Columns[2].Width - (isVerticalScrollVisible ? 8 * 3 : 8 / 2);
         }
 
         private void MainForm_Resize(object sender, EventArgs e)
@@ -228,12 +240,26 @@ namespace PatchLoader
                 string fileScPath = Path.Combine(TbPatchLocation.Text, "file_sc.txt");
                 if (File.Exists(fileScPath))
                 {
-                    System.Diagnostics.Process.Start("CMD.exe", $"/C \"{Properties.Settings.Default.PatchInstallerPath}\" STDEV11 1 \"{fileScPath}\" 1");
+                    string command = $"/C \"{Properties.Settings.Default.PatchInstallerPath}\" STDEV11 1 \"{fileScPath}\" 1";
+                    System.Diagnostics.Process.Start("CMD.exe", command);
                 }
                 else
                 {
                     MessageBox.Show("Файл сценария не найден!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtCreateFileSc_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(TbPatchLocation.Text))
+            {
+                DirectoryInfo patchDir = new DirectoryInfo(TbPatchLocation.Text);
+                PatchUtils.CreateFPScenarioByFiles(patchDir);
             }
             else
             {
