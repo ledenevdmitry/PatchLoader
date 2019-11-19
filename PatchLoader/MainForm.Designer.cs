@@ -43,6 +43,7 @@
             this.AddInRepDir = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.AddToPatch = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.BtInstallToTest = new System.Windows.Forms.Button();
+            this.BtRefreshList = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -90,7 +91,7 @@
             // 
             // BtPatchLocation
             // 
-            this.BtPatchLocation.Location = new System.Drawing.Point(201, 22);
+            this.BtPatchLocation.Location = new System.Drawing.Point(517, 22);
             this.BtPatchLocation.Name = "BtPatchLocation";
             this.BtPatchLocation.Size = new System.Drawing.Size(75, 23);
             this.BtPatchLocation.TabIndex = 1;
@@ -111,7 +112,7 @@
             // 
             this.TbPatchLocation.Location = new System.Drawing.Point(95, 24);
             this.TbPatchLocation.Name = "TbPatchLocation";
-            this.TbPatchLocation.Size = new System.Drawing.Size(100, 20);
+            this.TbPatchLocation.Size = new System.Drawing.Size(416, 20);
             this.TbPatchLocation.TabIndex = 3;
             // 
             // BtPush
@@ -135,6 +136,9 @@
             // 
             // DgvFileList
             // 
+            this.DgvFileList.AllowUserToAddRows = false;
+            this.DgvFileList.AllowUserToDeleteRows = false;
+            this.DgvFileList.AllowUserToResizeRows = false;
             this.DgvFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvFileList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.FileName,
@@ -175,11 +179,22 @@
             this.BtInstallToTest.UseVisualStyleBackColor = true;
             this.BtInstallToTest.Click += new System.EventHandler(this.BtInstallToTest_Click);
             // 
+            // BtRefreshList
+            // 
+            this.BtRefreshList.Location = new System.Drawing.Point(598, 22);
+            this.BtRefreshList.Name = "BtRefreshList";
+            this.BtRefreshList.Size = new System.Drawing.Size(75, 23);
+            this.BtRefreshList.TabIndex = 9;
+            this.BtRefreshList.Text = "Обновить";
+            this.BtRefreshList.UseVisualStyleBackColor = true;
+            this.BtRefreshList.Click += new System.EventHandler(this.BtRefreshList_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(685, 342);
+            this.Controls.Add(this.BtRefreshList);
             this.Controls.Add(this.BtInstallToTest);
             this.Controls.Add(this.DgvFileList);
             this.Controls.Add(this.LbFilesList);
@@ -217,6 +232,7 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddInRepDir;
         private System.Windows.Forms.DataGridViewCheckBoxColumn AddToPatch;
         private System.Windows.Forms.Button BtInstallToTest;
+        private System.Windows.Forms.Button BtRefreshList;
     }
 }
 

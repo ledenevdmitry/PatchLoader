@@ -17,6 +17,8 @@ namespace PatchLoader
         public MainForm()
         {
             InitializeComponent();
+            TbPatchLocation.Text = Properties.Settings.Default.LastSavedDir;
+            ResizeForm();
         }
 
         PatchUtils patchUtils = new PatchUtils(
@@ -24,13 +26,68 @@ namespace PatchLoader
             Properties.Settings.Default.RemoteLinkRoot,
             Properties.Settings.Default.BaseLocation);
 
-        private void BtPatchLocation_Click(object sender, EventArgs e)
+        private void RefreshList(DirectoryInfo patchDir)
         {
             Regex addToRepRegex = new Regex(Properties.Settings.Default.AddToRep);
             Regex addToPatchRegex = new Regex(Properties.Settings.Default.AddToPatch);
             Regex notAddToRepRegex = new Regex(Properties.Settings.Default.NotAddToRep);
             Regex notAddToPatchRegex = new Regex(Properties.Settings.Default.NotAddToPatch);
 
+            DgvFileList.Rows.Clear();
+            int i = 0;
+            foreach (FileInfo fileInfo in patchDir.EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                if (!fileInfo.Name.Equals("vssver2.scc", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    DgvFileList.Rows.Add();
+                    DataGridViewRow currRow = DgvFileList.Rows[i++];
+                    string fromSelectedPath = fileInfo.FullName.Substring(patchDir.FullName.Length + 1);
+
+                    string schema = "";
+                    bool schemaFound = false;
+
+                    if (fromSelectedPath.Count(x => x == '\\') > 1)
+                    {
+                        int schemaStart = fromSelectedPath.IndexOf('\\');
+                        int schemaEnd = fromSelectedPath.IndexOf('\\', schemaStart + 1);
+
+                        schema = fromSelectedPath.Substring(schemaStart + 1, schemaEnd - schemaStart - 1);
+                        schemaFound = true;
+                    }
+
+                    currRow.Cells[0].Value = fromSelectedPath;
+
+                    bool addToPatch = addToPatchRegex.IsMatch(fileInfo.Name) && !notAddToPatchRegex.IsMatch(fileInfo.Name);
+                    bool addToRep =
+                        schemaFound &&
+                        addToRepRegex.IsMatch(fromSelectedPath) &&
+                        !notAddToRepRegex.IsMatch(fromSelectedPath) &&
+                        //папка со скриптами, и подпапка есть в списке допустимых
+                        (PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.ScriptsSubdir, schema, patchDir, Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList())
+                         ||
+                         PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.InfaSubdir, schema, patchDir, Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()));
+
+                    currRow.Cells[1].Value = addToPatch && addToRep;
+                    currRow.Cells[2].Value = addToPatch;
+                }
+            }
+        }
+
+        private void BtRefreshList_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(TbPatchLocation.Text))
+            {
+                DirectoryInfo patchDir = new DirectoryInfo(TbPatchLocation.Text);
+                RefreshList(patchDir);
+            }
+            else
+            {
+                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtPatchLocation_Click(object sender, EventArgs e)
+        {
             FolderBrowserDialog fbd = new FolderBrowserDialog
             {
                 SelectedPath = Properties.Settings.Default.LastSavedDir
@@ -43,45 +100,14 @@ namespace PatchLoader
 
                 TbPatchLocation.Text = fbd.SelectedPath;
 
-                DirectoryInfo patchDir = new DirectoryInfo(fbd.SelectedPath);
-
-                DgvFileList.Rows.Clear();
-                int i = 0;
-                foreach (FileInfo fileInfo in patchDir.EnumerateFiles("*", SearchOption.AllDirectories))
+                if (Directory.Exists(fbd.SelectedPath))
                 {
-                    if (!fileInfo.Name.Equals("vssver2.scc", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        DgvFileList.Rows.Add();
-                        DataGridViewRow currRow = DgvFileList.Rows[i++];
-                        string fromSelectedPath = fileInfo.FullName.Substring(fbd.SelectedPath.Length + 1);
-
-                        string schema = "";
-                        bool schemaFound = false;
-
-                        if (fromSelectedPath.Count(x => x == '\\') > 1)
-                        {
-                            int schemaStart = fromSelectedPath.IndexOf('\\');
-                            int schemaEnd = fromSelectedPath.IndexOf('\\', schemaStart + 1);
-
-                            schema = fromSelectedPath.Substring(schemaStart + 1, schemaEnd - schemaStart - 1);
-                            schemaFound = true;
-                        }
-
-                        currRow.Cells[0].Value = fromSelectedPath;
-
-                        bool addToPatch = addToPatchRegex.IsMatch(fileInfo.Name) && !notAddToPatchRegex.IsMatch(fileInfo.Name);
-                        bool addToRep =
-                            schemaFound &&
-                            addToRepRegex.IsMatch(fromSelectedPath) && 
-                            !notAddToRepRegex.IsMatch(fromSelectedPath) &&
-                            //папка со скриптами, и подпапка есть в списке допустимых
-                            (PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.ScriptsSubdir, schema, patchDir, Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList())
-                             ||
-                             PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.InfaSubdir, schema, patchDir, Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()));
-
-                        currRow.Cells[1].Value = addToPatch && addToRep;
-                        currRow.Cells[2].Value = addToPatch;
-                    }
+                    DirectoryInfo patchDir = new DirectoryInfo(fbd.SelectedPath);
+                    RefreshList(patchDir);
+                }
+                else
+                {
+                    MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -98,6 +124,10 @@ namespace PatchLoader
                     Properties.Settings.Default.BaseLocation);
             }
 
+            patchUtils = new PatchUtils(
+                Properties.Settings.Default.RemoteRoot,
+                Properties.Settings.Default.RemoteLinkRoot,
+                Properties.Settings.Default.BaseLocation);
 
         }
 
@@ -147,13 +177,24 @@ namespace PatchLoader
             }
         }
 
-        private void MainForm_Resize(object sender, EventArgs e)
+        private void ResizeForm()
         {
             DgvFileList.Width = ClientRectangle.Width - 2 * 8;
             DgvFileList.Height = ClientRectangle.Height - DgvFileList.Top - BtPush.Height - 2 * 8;
 
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
             BtInstallToTest.Top = ClientRectangle.Height - BtInstallToTest.Height - 8;
+
+            BtRefreshList.Left = ClientRectangle.Width - BtRefreshList.Width - 8;
+            BtPatchLocation.Left = BtRefreshList.Left - BtRefreshList.Width - 8;
+            TbPatchLocation.Width = BtPatchLocation.Left - 8 - TbPatchLocation.Left;
+
+            DgvFileList.Columns[0].Width = DgvFileList.Width - DgvFileList.Columns[1].Width - DgvFileList.Columns[2].Width - 8;
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            ResizeForm();
         }
 
         private void CreateScriptsRepositoryDirToolStripMenuItem_Click(object sender, EventArgs e)
