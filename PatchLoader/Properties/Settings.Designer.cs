@@ -25,7 +25,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("$/Object_ATC")]
+        [global::System.Configuration.DefaultSettingValueAttribute("$/Objects_ATC")]
         public string RemoteRoot {
             get {
                 return ((string)(this["RemoteRoot"]));
@@ -49,7 +49,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Z:")]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\\\collection-srv\\VSS_ATC\\srcsafe.ini")]
         public string BaseLocation {
             get {
                 return ((string)(this["BaseLocation"]));
@@ -73,7 +73,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".*")]
         public string AddToRep {
             get {
                 return ((string)(this["AddToRep"]));
@@ -85,7 +85,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".*")]
         public string AddToPatch {
             get {
                 return ((string)(this["AddToPatch"]));
@@ -97,7 +97,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("script_|file_sc")]
         public string NotAddToRep {
             get {
                 return ((string)(this["NotAddToRep"]));
@@ -109,7 +109,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("vssver2.scc")]
         public string NotAddToPatch {
             get {
                 return ((string)(this["NotAddToPatch"]));

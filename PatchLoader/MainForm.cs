@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -152,25 +153,60 @@ namespace PatchLoader
             return res;
         }
 
+        private void MoveDir(string sourcePath, string destPath)
+        {
+            //Now Create all of the directories
+            foreach (string dirPath in Directory.GetDirectories(sourcePath, "*",
+                SearchOption.AllDirectories))
+                Directory.CreateDirectory(dirPath.Replace(sourcePath, destPath));
+
+            //Copy all the files & Replaces any files with the same name
+            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*",
+                SearchOption.AllDirectories))
+                File.Copy(newPath, newPath.Replace(sourcePath, destPath), true);
+        }
+
+        private void SetAttributesNormal(DirectoryInfo dir)
+        {
+            foreach (var subDir in dir.GetDirectories())
+            {
+                SetAttributesNormal(subDir);
+                subDir.Attributes = FileAttributes.Normal;
+            }
+            foreach (var file in dir.GetFiles())
+            {
+                file.Attributes = FileAttributes.Normal;
+            }
+        }
+
         private void BtPush_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(TbPatchLocation.Text))
             {
                 DirectoryInfo patchDir = new DirectoryInfo(TbPatchLocation.Text);
+                DirectoryInfo patchCopyDir = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, patchDir.Name));
+
+                if (patchCopyDir.Exists)
+                {
+                    SetAttributesNormal(patchCopyDir);
+                    Directory.Delete(patchCopyDir.FullName, true);
+                }
+
+                MoveDir(patchDir.FullName, patchCopyDir.FullName);
 
                 List<FileInfoWithPatchOptions> patchFiles =
                     DgvFileList.Rows.Cast<DataGridViewRow>()
                     .Where(x => x.Cells[0].Value != null)
                     .Select(x => new FileInfoWithPatchOptions(
                         new FileInfo(
-                            Path.Combine(patchDir.FullName, (string)x.Cells[0].Value)), 
+                            Path.Combine(patchCopyDir.FullName, (string)x.Cells[0].Value)), 
                             (bool)x.Cells[1].Value, 
                             (bool)x.Cells[2].Value))
                     .ToList();
 
-                if (CheckPatch(patchDir, patchFiles))
+                if (CheckPatch(patchCopyDir, patchFiles))
                 {
-                    if (patchUtils.PushPatch(patchDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
+                    if (patchUtils.PushPatch(patchCopyDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
                     {
                         MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -180,6 +216,9 @@ namespace PatchLoader
                         ef.ShowDialog();
                     }
                 }
+
+                SetAttributesNormal(patchCopyDir);
+                Directory.Delete(patchCopyDir.FullName, true);
             }
             else
             {
@@ -240,8 +279,18 @@ namespace PatchLoader
                 string fileScPath = Path.Combine(TbPatchLocation.Text, "file_sc.txt");
                 if (File.Exists(fileScPath))
                 {
-                    string command = $"/C \"{Properties.Settings.Default.PatchInstallerPath}\" STDEV11 1 \"{fileScPath}\" 1";
-                    System.Diagnostics.Process.Start("CMD.exe", command);
+                    string command = $"cmd /min /C \"set __COMPAT_LAYER = RUNASINVOKER && start \"\" Patch_installer_Pr.exe STDEV11 1 \"{fileScPath}\" 1\"";
+
+                    Process p = new Process();
+                    p.StartInfo.FileName = "cmd.exe";
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.StartInfo.RedirectStandardInput = true;
+                    p.Start();
+
+                    p.StandardInput.WriteLine($"cd {Properties.Settings.Default.PatchInstallerPath}");
+                    p.StandardInput.WriteLine($"cd {Properties.Settings.Default.PatchInstallerPath}");
+                    p.StandardInput.WriteLine(command);
                 }
                 else
                 {

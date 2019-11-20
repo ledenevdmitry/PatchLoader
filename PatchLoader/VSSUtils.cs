@@ -474,15 +474,22 @@ namespace PatchLoader
             foreach (DirectoryInfo localSubDir in localDir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
             {
                 VSSItem remoteSubDir = null;
+
+                bool found = false;
                 foreach (VSSItem currSubDir in remoteDir.Items)
                 {
                     if(currSubDir.Name.Equals(localSubDir.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         remoteSubDir = currSubDir;
+                        found = true;
                         break;
                     }
                 }
-                CheckDirRec(localSubDir, patchFiles, remoteSubDir, ref res);
+
+                if (found)
+                {
+                    CheckDirRec(localSubDir, patchFiles, remoteSubDir, ref res);
+                }
             }
 
         }

@@ -37,7 +37,7 @@ namespace PatchLoader
 
         public void CreateStructure(string dirName, string subdir, List<string> repScripts)
         {
-            VSS vss = new VSS(remoteBaseLocation, "Dmitry");
+            VSS vss = new VSS(remoteBaseLocation, Environment.UserName);
             vss.CreateStructure(dirName, remoteRoot, subdir, repScripts);
         }
 
