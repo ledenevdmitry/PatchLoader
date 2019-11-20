@@ -193,6 +193,7 @@ namespace PatchLoader
                 }
 
                 MoveDir(patchDir.FullName, patchCopyDir.FullName);
+                SetAttributesNormal(patchCopyDir);
 
                 List<FileInfoWithPatchOptions> patchFiles =
                     DgvFileList.Rows.Cast<DataGridViewRow>()
@@ -257,6 +258,8 @@ namespace PatchLoader
                     evf.Value,
                     Properties.Settings.Default.ScriptsSubdir,
                     Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
+
+                MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -269,6 +272,8 @@ namespace PatchLoader
                     evf.Value,
                     Properties.Settings.Default.InfaSubdir,
                     Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
+
+                MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

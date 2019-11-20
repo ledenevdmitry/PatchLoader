@@ -510,7 +510,7 @@ namespace PatchLoader
                 {
                     if (fi.AddInRepDir)
                     {
-                        if (remoteDir != null && PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        if (/*remoteDir != null && */PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
                         {
                             CreateLink(item, linkDir);
                         }
@@ -521,7 +521,7 @@ namespace PatchLoader
                     }
                     else if (fi.AddToPatch)
                     {
-                        if(linkDir != null && !PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        if(/*linkDir != null && */!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
                         {
                             vssPathCheckedOutToAnotherUser.Add($"{linkDir.Spec}/{fi.FileInfo.Name}");
                         }
