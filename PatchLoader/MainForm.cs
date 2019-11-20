@@ -289,7 +289,6 @@ namespace PatchLoader
                     p.Start();
 
                     p.StandardInput.WriteLine($"cd {Properties.Settings.Default.PatchInstallerPath}");
-                    p.StandardInput.WriteLine($"cd {Properties.Settings.Default.PatchInstallerPath}");
                     p.StandardInput.WriteLine(command);
                 }
                 else
