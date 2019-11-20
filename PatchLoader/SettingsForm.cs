@@ -15,6 +15,7 @@ namespace PatchLoader
         public SettingsForm()
         {
             InitializeComponent();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             TbLinkDir.Text = Properties.Settings.Default.RemoteLinkRoot;
             TbRemoteBase.Text = Properties.Settings.Default.BaseLocation;
             TbRemoteDir.Text = Properties.Settings.Default.RemoteRoot;

@@ -15,6 +15,7 @@ namespace PatchLoader
         public ErrorForm(string caption, string text)
         {
             InitializeComponent();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             GbMain.Text = caption;
             TbMain.Text = text;
         }

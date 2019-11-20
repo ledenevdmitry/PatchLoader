@@ -15,6 +15,7 @@ namespace PatchLoader
         public EnterValueForm(string caption, string value = null)
         {
             InitializeComponent();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             Text = caption;
             TbValue.Text = value;
         }

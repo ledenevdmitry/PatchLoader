@@ -18,6 +18,7 @@ namespace PatchLoader
         public MainForm()
         {
             InitializeComponent();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             TbPatchLocation.Text = Properties.Settings.Default.LastSavedDir;
             ResizeForm();
         }
