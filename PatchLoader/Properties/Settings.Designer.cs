@@ -37,7 +37,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("$/Working")]
+        [global::System.Configuration.DefaultSettingValueAttribute("$/Patches/Working")]
         public string RemoteLinkRoot {
             get {
                 return ((string)(this["RemoteLinkRoot"]));
@@ -49,7 +49,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\\\collection-srv\\VSS_ATC\\srcsafe.ini")]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\\\bivss-dmz\\DWH\\srcsafe.ini")]
         public string BaseLocation {
             get {
                 return ((string)(this["BaseLocation"]));
@@ -170,7 +170,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("X:\\IPatch\\patch_ins_pr_slesh")]
         public string PatchInstallerPath {
             get {
                 return ((string)(this["PatchInstallerPath"]));

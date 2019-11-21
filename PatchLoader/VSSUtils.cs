@@ -376,6 +376,7 @@ namespace PatchLoader
                 if (item.Type == 0 && item.Name.Equals(localDir.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     item.Destroy();
+                    break;
                 }
             }
             VSSItem linkDir = linkRootDir.NewSubproject(localDir.Name);
@@ -538,7 +539,7 @@ namespace PatchLoader
                 //если там не было папки, добавляем ее
                 if (patchFiles.Where(x => x.AddInRepDir)
                     .Select(x => x.FileInfo.Directory)
-                    .Where(x => (x.FullName + "\\").StartsWith(localSubDir.FullName + "\\", StringComparison.InvariantCulture))
+                    .Where(x => (x.FullName + "\\").StartsWith(localSubDir.FullName + "\\", StringComparison.InvariantCultureIgnoreCase))
                     .Count() > 0)
                 {
                     bool found = false;
@@ -564,7 +565,7 @@ namespace PatchLoader
                 //создаем подпапку
                 if (patchFiles.Where(x => x.AddToPatch)
                     .Select(x => x.FileInfo.Directory)
-                    .Where(x => (x.FullName + "\\").StartsWith((localSubDir.FullName + "\\"), StringComparison.InvariantCulture))
+                    .Where(x => (x.FullName + "\\").StartsWith((localSubDir.FullName + "\\"), StringComparison.InvariantCultureIgnoreCase))
                     .Count() > 0)
                 {
                     linkSubDir = linkDir.NewSubproject(localSubDir.Name);

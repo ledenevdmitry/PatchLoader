@@ -6,10 +6,10 @@
       <Value Profile="(Default)">$/Objects_ATC</Value>
     </Setting>
     <Setting Name="RemoteLinkRoot" Type="System.String" Scope="User">
-      <Value Profile="(Default)">$/Working</Value>
+      <Value Profile="(Default)">$/Patches/Working</Value>
     </Setting>
     <Setting Name="BaseLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\\collection-srv\VSS_ATC\srcsafe.ini</Value>
+      <Value Profile="(Default)">\\bivss-dmz\DWH\srcsafe.ini</Value>
     </Setting>
     <Setting Name="LastSavedDir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -54,7 +54,7 @@ User-Defined Function
 Workflows</Value>
     </Setting>
     <Setting Name="PatchInstallerPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">X:\IPatch\patch_ins_pr_slesh</Value>
     </Setting>
   </Settings>
 </SettingsFile>
