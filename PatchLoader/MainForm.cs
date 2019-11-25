@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,6 +28,8 @@ namespace PatchLoader
             Properties.Settings.Default.RemoteRoot,
             Properties.Settings.Default.RemoteLinkRoot,
             Properties.Settings.Default.BaseLocation);
+
+
 
         private void RefreshList(DirectoryInfo patchDir)
         {
@@ -154,7 +157,7 @@ namespace PatchLoader
             return res;
         }
 
-        private void MoveDir(string sourcePath, string destPath)
+        private void CopyDir(string sourcePath, string destPath)
         {
             //Now Create all of the directories
             foreach (string dirPath in Directory.GetDirectories(sourcePath, "*",
@@ -193,7 +196,7 @@ namespace PatchLoader
                     Directory.Delete(patchCopyDir.FullName, true);
                 }
 
-                MoveDir(patchDir.FullName, patchCopyDir.FullName);
+                CopyDir(patchDir.FullName, patchCopyDir.FullName);
                 SetAttributesNormal(patchCopyDir);
 
                 List<FileInfoWithPatchOptions> patchFiles =
@@ -206,11 +209,32 @@ namespace PatchLoader
                             (bool)x.Cells[2].Value))
                     .ToList();
 
+                PushPatch(patchCopyDir, patchFiles);
+            }
+            else
+            {
+                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void PushPatch(DirectoryInfo patchCopyDir, List<FileInfoWithPatchOptions> patchFiles)
+        {
+            LogForm lf = new LogForm();
+            VSS.sender = lf.AddToLog;
+            lf.Show();
+
+            lf.AddToLog("Проверка патча");
+            Thread th = new Thread(() =>
+            {
                 if (CheckPatch(patchCopyDir, patchFiles))
                 {
+                    lf.AddToLog("Выкладывание патча");
                     if (patchUtils.PushPatch(patchCopyDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
                     {
-                        MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
+                        {
+                            lf.Close();
+                        }
                     }
                     else
                     {
@@ -221,11 +245,9 @@ namespace PatchLoader
 
                 SetAttributesNormal(patchCopyDir);
                 Directory.Delete(patchCopyDir.FullName, true);
-            }
-            else
-            {
-                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            });
+
+            th.Start();
         }
 
         private void ResizeForm()

@@ -300,16 +300,19 @@ namespace PatchLoader
                 if (item.IsPinned)
                 {
                     Unpin((VSSItem)item);
+                    sender($"{item.Spec} unpinned");
                 }
 
                 //file is not checked out
                 if (item.IsCheckedOut == 0)
                 {
                     item.Checkout("", Path.Combine(localDir, localFileName), (int)VSSFlags.VSSFLAG_GETNO);
+                    sender($"{item.Spec} checked out");
                 }
                 //file is checked out to another user
                 else if (item.IsCheckedOut == 1)
                 {
+                    sender($"{item.Spec} checked out by another user!");
                     return false;
                 }
             }
@@ -318,7 +321,12 @@ namespace PatchLoader
                 //file not found
                 if (!IsFileNotFoundError(exc))
                 {
+                    sender($"{exc.Message}");
                     throw exc;
+                }
+                else
+                {
+                    sender($"{fileName} не найден");
                 }
             }
             return true;
@@ -330,6 +338,9 @@ namespace PatchLoader
                 return true;
             return false;
         }
+
+        public delegate void SendLog(string log);
+        public static SendLog sender;
 
         //Unpin + Checkout (PrepareToPush) + Checkin + Pin or Add + Pin + + Exception handling
         public bool PushFile(string vssDir, string localDir, string localFileName, out VSSItem item)
@@ -346,8 +357,12 @@ namespace PatchLoader
             try
             {
                 item = VSSDB.get_VSSItem(vssPath, false);
+
                 item.Checkin("", localPath);
+                sender($"{item.Spec} checked in");
+
                 Pin(item, item.VersionNumber);
+                sender($"{item.Spec} pinned");
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -357,9 +372,14 @@ namespace PatchLoader
                 }
                 else
                 {
+                    sender($"{vssPath} не найден. Добавление нового файла...");
                     IVSSItem dir = VSSDB.get_VSSItem(vssDir, false);
+
                     item = dir.Add(localPath);
+                    sender($"{item.Spec} добавлен");
+
                     Pin(item, item.VersionNumber);
+                    sender($"{item.Spec} pinned");
                 }
             }
 
@@ -376,10 +396,12 @@ namespace PatchLoader
                 if (item.Type == 0 && item.Name.Equals(localDir.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     item.Destroy();
+                    sender($"{item.Spec} найдена в {linkRootDir.Spec} и удалена!");
                     break;
                 }
             }
             VSSItem linkDir = linkRootDir.NewSubproject(localDir.Name);
+            sender($"{linkDir.Spec} создана в {linkRootDir.Spec}");
 
             vssPathCheckedOutToAnotherUser = new List<string>();
 
@@ -414,6 +436,7 @@ namespace PatchLoader
                 if (currRemoteSubDir.Type == 0 && currRemoteSubDir.Name.Equals(dirName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     found = true;
+                    sender($"{currRemoteSubDir.Spec} найдена в {repSubdir.Spec}");
                     break;
                 }
             }
@@ -426,6 +449,7 @@ namespace PatchLoader
             else
             {
                 newDir = repSubdir.NewSubproject(dirName);
+                sender($"{newDir.Spec} создана в {repSubdir.Spec}");
             }
 
             foreach(string path in repStructure)
@@ -442,6 +466,7 @@ namespace PatchLoader
                         if (currSubDir.Type == 0 && currSubDir.Name.Equals(dir, StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = true;
+                            sender($"{currSubDir.Spec} найдена в {currDir.Spec}");
                             break;
                         }
                     }
@@ -449,6 +474,7 @@ namespace PatchLoader
                     if (!found)
                     {
                         currDir = currDir.NewSubproject(dir);
+                        sender($"{currDir.Spec} создана в {currDir.Spec}");
                     }
                 }
             }
@@ -511,6 +537,7 @@ namespace PatchLoader
                 {
                     if (fi.AddInRepDir)
                     {
+                        sender($"{fi.FileInfo.Name} добавляется в {remoteDir.Spec}...");
                         if (/*remoteDir != null && */PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
                         {
                             CreateLink(item, linkDir);
@@ -522,7 +549,8 @@ namespace PatchLoader
                     }
                     else if (fi.AddToPatch)
                     {
-                        if(/*linkDir != null && */!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        sender($"{fi.FileInfo.Name} добавляется в {linkDir.Spec}...");
+                        if (/*linkDir != null && */!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
                         {
                             vssPathCheckedOutToAnotherUser.Add($"{linkDir.Spec}/{fi.FileInfo.Name}");
                         }
@@ -549,6 +577,7 @@ namespace PatchLoader
                         if (currRemoteSubDir.Type == 0 && currRemoteSubDir.Name.Equals(localSubDir.Name, StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = true;
+                            sender($"{currRemoteSubDir.Spec} найдена в {remoteDir.Spec}");
                             remoteSubDir = currRemoteSubDir;
                         }
                     }
@@ -557,6 +586,7 @@ namespace PatchLoader
                     if (!found)
                     {
                         remoteSubDir = remoteDir.NewSubproject(localSubDir.Name);
+                        sender($"{remoteSubDir.Spec} создана в {remoteDir.Spec}");
                     }
 
                 }
@@ -569,6 +599,7 @@ namespace PatchLoader
                     .Count() > 0)
                 {
                     linkSubDir = linkDir.NewSubproject(localSubDir.Name);
+                    sender($"{linkSubDir.Spec} создана в {linkDir.Spec}");
                 }
 
                 PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser);
@@ -578,6 +609,7 @@ namespace PatchLoader
         public void CreateLink(IVSSItem sourceItem, IVSSItem destDir)
         {
             destDir.Share((VSSItem)sourceItem, destDir.Name, (int)VSSFlags.VSSFLAG_GETNO);
+            sender($"Создана ссылка для файла {sourceItem.Spec} в {destDir.Spec}");
         }
 
         public void Close()
