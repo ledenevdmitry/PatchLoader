@@ -30,6 +30,7 @@ namespace PatchLoader
 
         private void BtFindFirst_Click(object sender, EventArgs e)
         {
+            TbResult.Clear();
             List<string> roots = TbRoots.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
             vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
 
@@ -89,7 +90,7 @@ namespace PatchLoader
 
         private void BtFindAll_Click(object sender, EventArgs e)
         {
-
+            TbResult.Clear();
             List<string> roots = TbRoots.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
             vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
 
@@ -129,10 +130,6 @@ namespace PatchLoader
             if(!CbDepth.Checked)
             {
                 NudDepth.Value = -1;
-            }
-            else
-            {
-                NudDepth.Value = 3;
             }
         }
     }

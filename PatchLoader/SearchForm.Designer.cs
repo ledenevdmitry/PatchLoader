@@ -63,6 +63,7 @@
             this.TbRoots.Location = new System.Drawing.Point(15, 60);
             this.TbRoots.Multiline = true;
             this.TbRoots.Name = "TbRoots";
+            this.TbRoots.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbRoots.Size = new System.Drawing.Size(231, 114);
             this.TbRoots.TabIndex = 4;
             // 
@@ -80,6 +81,7 @@
             this.TbResult.Location = new System.Drawing.Point(252, 60);
             this.TbResult.Multiline = true;
             this.TbResult.Name = "TbResult";
+            this.TbResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbResult.Size = new System.Drawing.Size(231, 114);
             this.TbResult.TabIndex = 5;
             // 
@@ -144,7 +146,7 @@
             0,
             -2147483648});
             this.NudDepth.Name = "NudDepth";
-            this.NudDepth.Size = new System.Drawing.Size(110, 20);
+            this.NudDepth.Size = new System.Drawing.Size(47, 20);
             this.NudDepth.TabIndex = 13;
             this.NudDepth.Value = new decimal(new int[] {
             1,
@@ -169,7 +171,7 @@
             this.Controls.Add(this.TbFileName);
             this.Controls.Add(this.LbFileName);
             this.Name = "SearchForm";
-            this.Text = "SearchForm";
+            this.Text = "Поиск";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SearchForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.NudDepth)).EndInit();
             this.ResumeLayout(false);
