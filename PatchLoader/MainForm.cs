@@ -220,17 +220,20 @@ namespace PatchLoader
         private void PushPatch(DirectoryInfo patchCopyDir, List<FileInfoWithPatchOptions> patchFiles)
         {
             LogForm lf = new LogForm();
-            VSS.sender = lf.AddToLog;
+            VSSUtils.sender = lf.AddToLog;
             lf.Show();
 
             lf.AddToLog("Проверка патча");
             Thread th = new Thread(() =>
             {
+                DisableVSSButtons();
+
                 if (CheckPatch(patchCopyDir, patchFiles))
                 {
                     lf.AddToLog("Выкладывание патча");
                     if (patchUtils.PushPatch(patchCopyDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
                     {
+                        lf.AddToLog(Environment.NewLine + "Патч выложен!");
                         if (MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
                         {
                             lf.Close();
@@ -245,9 +248,25 @@ namespace PatchLoader
 
                 SetAttributesNormal(patchCopyDir);
                 Directory.Delete(patchCopyDir.FullName, true);
+
+                EnableVSSButtons();
             });
 
             th.Start();
+        }
+
+        private void DisableVSSButtons()
+        {
+            BtPush.Invoke(new Action(() => BtPush.Enabled = false));
+            MainMenuStrip.Invoke(new Action(() => CreateScriptsRepositoryDirToolStripMenuItem.Enabled = false));
+            MainMenuStrip.Invoke(new Action(() => CreateInfaRepositoryDirToolStripMenuItem.Enabled = false));
+        }
+
+        private void EnableVSSButtons()
+        {
+            BtPush.Invoke(new Action(() => BtPush.Enabled = true));
+            MainMenuStrip.Invoke(new Action(() => CreateScriptsRepositoryDirToolStripMenuItem.Enabled = true));
+            MainMenuStrip.Invoke(new Action(() => CreateInfaRepositoryDirToolStripMenuItem.Enabled = true));
         }
 
         private void ResizeForm()
@@ -277,12 +296,28 @@ namespace PatchLoader
             EnterValueForm evf = new EnterValueForm("Добавление папки скриптов в репозиторий");
             if(evf.ShowDialog() == DialogResult.OK)
             {
-                patchUtils.CreateStructure(
-                    evf.Value,
-                    Properties.Settings.Default.ScriptsSubdir,
-                    Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
+                LogForm lf = new LogForm();
+                VSSUtils.sender = lf.AddToLog;
+                lf.Show();
 
-                MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Thread th = new Thread(() =>
+                {
+                    DisableVSSButtons();
+
+                    patchUtils.CreateStructure(
+                        evf.Value,
+                        Properties.Settings.Default.ScriptsSubdir,
+                        Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
+
+                    if(MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
+                    {
+                        lf.Close();
+                    }
+
+                    EnableVSSButtons();
+                });
+
+                th.Start();
             }
         }
 
@@ -291,12 +326,28 @@ namespace PatchLoader
             EnterValueForm evf = new EnterValueForm("Добавление папки информатики в репозиторий");
             if (evf.ShowDialog() == DialogResult.OK)
             {
-                patchUtils.CreateStructure(
+                LogForm lf = new LogForm();
+                VSSUtils.sender = lf.AddToLog;
+                lf.Show();
+
+                Thread th = new Thread(() =>
+                {
+                    DisableVSSButtons();
+
+                    patchUtils.CreateStructure(
                     evf.Value,
                     Properties.Settings.Default.InfaSubdir,
                     Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
 
-                MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
+                    {
+                        lf.Close();
+                    }
+
+                    EnableVSSButtons();
+                });
+
+                th.Start();
             }
         }
 

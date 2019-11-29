@@ -56,5 +56,8 @@ Workflows</Value>
     <Setting Name="PatchInstallerPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">X:\IPatch\patch_ins_pr_slesh</Value>
     </Setting>
+    <Setting Name="SearchRoots" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

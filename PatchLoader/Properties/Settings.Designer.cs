@@ -179,5 +179,17 @@ namespace PatchLoader.Properties {
                 this["PatchInstallerPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SearchRoots {
+            get {
+                return ((string)(this["SearchRoots"]));
+            }
+            set {
+                this["SearchRoots"] = value;
+            }
+        }
     }
 }

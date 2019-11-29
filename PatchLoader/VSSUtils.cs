@@ -10,17 +10,18 @@ using System.Threading.Tasks;
 
 namespace PatchLoader
 {
-    public class VSS
+    public class VSSUtils
     {
         public VSSDatabase VSSDB { get; private set; }
 
         public string Location { get; set; }
         public string Login { get; set; }
 
-        public VSS(string location, string login)
+        public VSSUtils(string location, string login)
         {
             this.Location = location;
             this.Login = login;
+            stopSearch = false;
             Connect();
         }
 
@@ -73,60 +74,67 @@ namespace PatchLoader
             return spec.Insert(1, "/");
         }
 
+        public bool stopSearch;
 
-        public IEnumerable<string> AllInEntireBase(string root, List<string> matches, Regex pattern, int depth)
+        public IEnumerable<string> AllInEntireBase(string root, string filename, int depth)
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
-            while (queue.Count > 0)
+            while (queue.Count > 0 && !stopSearch)
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
-                if (IsMatch(pattern, currItem.Item1))
+
+                if ((VSSItemType)currItem.Item1.Type == VSSItemType.VSSITEM_FILE && filename.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    matches.Add(currItem.Item1.Name);
-                    yield return SpecToCorrectPath(currItem.Item1.Spec);
+                    sender($"Найден файл {currItem.Item1.Spec} ...");
+                    yield return currItem.Item1.Spec;
                 }
 
-                if (currItem.Item2 < depth)
+                if (currItem.Item2 < depth || depth == -1)
                 {
-                    foreach (VSSItem subItem in currItem.Item1.Items)
+                    if ((VSSItemType)currItem.Item1.Type == VSSItemType.VSSITEM_PROJECT)
                     {
-                        if ((VSSItemType)subItem.Type == VSSItemType.VSSITEM_PROJECT)
+                        sender($"Запланирован поиск в {currItem.Item1.Spec} ...");
+                        foreach (VSSItem subItem in currItem.Item1.Items)
                         {
-                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, depth + 1));
+                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, depth == -1 ? -1 : depth + 1));
                         }
                     }
                 }
             }
-            throw new ArgumentException("File Not Found");
+
+            throw new FileNotFoundException("File Not Found");
         }
 
-        public string FirstInEntireBase(string root, out string match, Regex pattern, int depth)
+        public bool FirstInEntireBase(string root, string filename, int depth, out string match)
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
-            while (queue.Count > 0)
+            while (queue.Count > 0 && !stopSearch)
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if (IsMatch(pattern, currItem.Item1))
+                if ((VSSItemType)currItem.Item1.Type == VSSItemType.VSSITEM_FILE && filename.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    match = currItem.Item1.Name;
-                    return SpecToCorrectPath(currItem.Item1.Spec);
+                    sender($"Найден файл {currItem.Item1.Spec} ...");
+                    match = currItem.Item1.Spec;
+                    return true;
                 }
 
-                if (currItem.Item2 < depth)
+                if (currItem.Item2 < depth || depth == -1)
                 {
-                    foreach (VSSItem subItem in currItem.Item1.Items)
+                    if ((VSSItemType)currItem.Item1.Type == VSSItemType.VSSITEM_PROJECT)
                     {
-                        if ((VSSItemType)subItem.Type == VSSItemType.VSSITEM_PROJECT)
+                        sender($"Запланирован поиск в {currItem.Item1.Spec} ...");
+                        foreach (VSSItem subItem in currItem.Item1.Items)
                         {
-                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, depth + 1));
+                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, depth == -1 ? -1 : depth + 1));
                         }
                     }
                 }
             }
-            throw new ArgumentException("File Not Found");
+
+            throw new FileNotFoundException("File Not Found");
         }
 
         private bool IsMatch(Regex pattern, VSSItem item)

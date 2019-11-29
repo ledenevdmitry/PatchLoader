@@ -24,20 +24,20 @@ namespace PatchLoader
 
         public bool PushPatch(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, out List<string> vssPathCheckedOutToAnotherUser)
         {
-            VSS vss = new VSS(remoteBaseLocation, Environment.UserName);
+            VSSUtils vss = new VSSUtils(remoteBaseLocation, Environment.UserName);
             return vss.PushDir(localDir, patchFiles, remoteRoot, remoteLinkRoot, out vssPathCheckedOutToAnotherUser);
         }
 
         public string CheckPatch(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles)
         {
-            VSS vss = new VSS(remoteBaseLocation, Environment.UserName);
+            VSSUtils vss = new VSSUtils(remoteBaseLocation, Environment.UserName);
             return vss.CheckDir(localDir, patchFiles, remoteRoot);
 
         }
 
         public void CreateStructure(string dirName, string subdir, List<string> repScripts)
         {
-            VSS vss = new VSS(remoteBaseLocation, Environment.UserName);
+            VSSUtils vss = new VSSUtils(remoteBaseLocation, Environment.UserName);
             vss.CreateStructure(dirName, remoteRoot, subdir, repScripts);
         }
 
