@@ -43,7 +43,7 @@ namespace PatchLoader
 
                 foreach (string root in roots)
                 {
-                    if(vss.FirstInEntireBase(root, TbFileName.Text, -1, out string match))
+                    if(vss.FirstInEntireBase(root, TbFileName.Text, (int)NudDepth.Value, out string match))
                     {
                         TbResult.AppendText(match);
                     }
@@ -105,7 +105,7 @@ namespace PatchLoader
                 {
                     try
                     {
-                        foreach (string res in vss.AllInEntireBase(root, TbFileName.Text, -1))
+                        foreach (string res in vss.AllInEntireBase(root, TbFileName.Text, (int)NudDepth.Value))
                         {
                             TbResult.AppendText(res);
                         }
@@ -121,6 +121,19 @@ namespace PatchLoader
             });
 
             th.Start();
+        }
+
+        private void CbDepth_CheckedChanged(object sender, EventArgs e)
+        {
+            NudDepth.Enabled = CbDepth.Checked;
+            if(!CbDepth.Checked)
+            {
+                NudDepth.Value = -1;
+            }
+            else
+            {
+                NudDepth.Value = 3;
+            }
         }
     }
 }

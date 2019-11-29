@@ -37,6 +37,9 @@
             this.BtFindFirst = new System.Windows.Forms.Button();
             this.BtFindAll = new System.Windows.Forms.Button();
             this.BtStopSearch = new System.Windows.Forms.Button();
+            this.CbDepth = new System.Windows.Forms.CheckBox();
+            this.NudDepth = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.NudDepth)).BeginInit();
             this.SuspendLayout();
             // 
             // LbFileName
@@ -120,11 +123,42 @@
             this.BtStopSearch.UseVisualStyleBackColor = true;
             this.BtStopSearch.Click += new System.EventHandler(this.BtStopSearch_Click);
             // 
+            // CbDepth
+            // 
+            this.CbDepth.AutoSize = true;
+            this.CbDepth.Location = new System.Drawing.Point(261, 8);
+            this.CbDepth.Name = "CbDepth";
+            this.CbDepth.Size = new System.Drawing.Size(106, 17);
+            this.CbDepth.TabIndex = 12;
+            this.CbDepth.Text = "Глубина поиска";
+            this.CbDepth.UseVisualStyleBackColor = true;
+            this.CbDepth.CheckedChanged += new System.EventHandler(this.CbDepth_CheckedChanged);
+            // 
+            // NudDepth
+            // 
+            this.NudDepth.Enabled = false;
+            this.NudDepth.Location = new System.Drawing.Point(373, 7);
+            this.NudDepth.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.NudDepth.Name = "NudDepth";
+            this.NudDepth.Size = new System.Drawing.Size(110, 20);
+            this.NudDepth.TabIndex = 13;
+            this.NudDepth.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            // 
             // SearchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(495, 213);
+            this.Controls.Add(this.NudDepth);
+            this.Controls.Add(this.CbDepth);
             this.Controls.Add(this.BtStopSearch);
             this.Controls.Add(this.BtFindAll);
             this.Controls.Add(this.BtFindFirst);
@@ -137,6 +171,7 @@
             this.Name = "SearchForm";
             this.Text = "SearchForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SearchForm_FormClosing);
+            ((System.ComponentModel.ISupportInitialize)(this.NudDepth)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -153,5 +188,7 @@
         private System.Windows.Forms.Button BtFindFirst;
         private System.Windows.Forms.Button BtFindAll;
         private System.Windows.Forms.Button BtStopSearch;
+        private System.Windows.Forms.CheckBox CbDepth;
+        private System.Windows.Forms.NumericUpDown NudDepth;
     }
 }

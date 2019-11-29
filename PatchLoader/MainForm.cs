@@ -393,5 +393,11 @@ namespace PatchLoader
                 MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void FindToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchForm sf = new SearchForm();
+            sf.ShowDialog();
+        }
     }
 }

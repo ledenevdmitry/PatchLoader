@@ -45,6 +45,7 @@
             this.BtInstallToTest = new System.Windows.Forms.Button();
             this.BtRefreshList = new System.Windows.Forms.Button();
             this.BtCreateFileSc = new System.Windows.Forms.Button();
+            this.FindToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -53,7 +54,8 @@
             // 
             this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CreateToolStripMenuItem,
-            this.SettingsToolStripMenuItem});
+            this.SettingsToolStripMenuItem,
+            this.FindToolStripMenuItem});
             this.MainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MainMenuStrip.Name = "MainMenuStrip";
             this.MainMenuStrip.Size = new System.Drawing.Size(685, 24);
@@ -203,6 +205,13 @@
             this.BtCreateFileSc.UseVisualStyleBackColor = true;
             this.BtCreateFileSc.Click += new System.EventHandler(this.BtCreateFileSc_Click);
             // 
+            // FindToolStripMenuItem
+            // 
+            this.FindToolStripMenuItem.Name = "FindToolStripMenuItem";
+            this.FindToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.FindToolStripMenuItem.Text = "Найти";
+            this.FindToolStripMenuItem.Click += new System.EventHandler(this.FindToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -248,6 +257,7 @@
         private System.Windows.Forms.Button BtInstallToTest;
         private System.Windows.Forms.Button BtRefreshList;
         private System.Windows.Forms.Button BtCreateFileSc;
+        private System.Windows.Forms.ToolStripMenuItem FindToolStripMenuItem;
     }
 }
 
