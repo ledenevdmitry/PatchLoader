@@ -33,27 +33,37 @@ namespace PatchLoader
             TbResult.Clear();
             List<string> roots = TbRoots.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
             vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
+            
+            lf = new LogForm();
+            VSSUtils.sender = lf.AddToLog;
+            lf.Show();
 
             Thread th = new Thread(() =>
             {
                 EnableStopButton();
                 DisableSearchButtons();
 
-                LogForm lf = new LogForm();
-                VSSUtils.sender = lf.AddToLog;
+                bool found = false;
 
                 foreach (string root in roots)
                 {
                     if(vss.FirstInEntireBase(root, TbFileName.Text, (int)NudDepth.Value, out string match))
                     {
-                        TbResult.AppendText(match);
+                        TbResult.Invoke(new Action(() => TbResult.AppendText(match)));
+                        found = true;
+                        break;
                     }
                     else
                     {
                         MessageBox.Show("Файл не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
+                }
+
+                if (found)
+                {
                     MessageBox.Show("Поиск завершен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
+
                 EnableSearchButtons();
                 DisableStopButton();
             });
@@ -75,32 +85,36 @@ namespace PatchLoader
 
         private void DisableStopButton()
         {
-            BtStopSearch.Invoke(new Action(() => BtFindFirst.Enabled = false));
+            BtStopSearch.Invoke(new Action(() => BtStopSearch.Enabled = false));
         }
 
         private void EnableStopButton()
         {
-            BtStopSearch.Invoke(new Action(() => BtFindFirst.Enabled = true));
+            BtStopSearch.Invoke(new Action(() => BtStopSearch.Enabled = true));
         }
 
         private void BtStopSearch_Click(object sender, EventArgs e)
         {
             vss.stopSearch = true;
+            lf.Close();
         }
+
+        LogForm lf;
 
         private void BtFindAll_Click(object sender, EventArgs e)
         {
             TbResult.Clear();
             List<string> roots = TbRoots.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
             vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
+            
+            lf = new LogForm();
+            VSSUtils.sender = lf.AddToLog;
+            lf.Show();
 
             Thread th = new Thread(() =>
             {
                 EnableStopButton();
                 DisableSearchButtons();
-
-                LogForm lf = new LogForm();
-                VSSUtils.sender = lf.AddToLog;
 
                 foreach (string root in roots)
                 {
@@ -108,7 +122,7 @@ namespace PatchLoader
                     {
                         foreach (string res in vss.AllInEntireBase(root, TbFileName.Text, (int)NudDepth.Value))
                         {
-                            TbResult.AppendText(res);
+                            TbResult.Invoke(new Action(() => TbResult.AppendText(res + Environment.NewLine)));
                         }
                         MessageBox.Show("Поиск завершен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
@@ -139,17 +153,8 @@ namespace PatchLoader
             CbDepth.Left = NudDepth.Left - CbDepth.Width - 8;
             TbFileName.Width = ClientRectangle.Width - LbFileName.Width - CbDepth.Width - NudDepth.Width - 8 * 5;
 
-            LbResult.Left = ClientRectangle.Width / 2 + 8 / 2;
-            TbResult.Left = ClientRectangle.Width / 2 + 8 / 2;
-
-            LbRoots.Left = 8;
-            TbRoots.Left = 8;
-
-            TbRoots.Width = ClientRectangle.Width / 2 - 8 * 3 / 2;
-            TbResult.Width = ClientRectangle.Width / 2 - 8 * 3 / 2;
-
-            TbRoots.Height = ClientRectangle.Height - LbRoots.Bottom - BtFindFirst.Height - 8 * 3;
-            TbResult.Height = ClientRectangle.Height - LbRoots.Bottom - BtFindFirst.Height - 8 * 3;
+            GbSearch.Width = ClientRectangle.Width - 8 * 2;
+            GbSearch.Height = ClientRectangle.Height - LbFileName.Bottom - BtFindFirst.Height - 8 * 3;
 
             BtFindFirst.Top = ClientRectangle.Height - BtFindFirst.Height - 8;
             BtFindAll.Top = ClientRectangle.Height - BtFindAll.Height - 8;

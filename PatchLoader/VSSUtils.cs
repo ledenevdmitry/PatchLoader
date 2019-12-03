@@ -18,6 +18,7 @@ namespace PatchLoader
         public string Location { get; set; }
         public string Login { get; set; }
         private string basePath;
+        private string SSExeFullName;
 
         public VSSUtils(string location, string login)
         {
@@ -26,6 +27,7 @@ namespace PatchLoader
             stopSearch = false;
             Connect();
             basePath = VSSDB.SrcSafeIni.ToUpper().Replace("SRCSAFE.INI", "");
+            SSExeFullName = Path.Combine(Properties.Settings.Default.SSPath, "ss.exe");
         }
 
         public void Connect()
@@ -83,6 +85,9 @@ namespace PatchLoader
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
+
+            bool found = false;
+
             while (queue.Count > 0 && !stopSearch)
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
@@ -91,6 +96,7 @@ namespace PatchLoader
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     yield return currItem.Item1.Spec;
+                    found = true;
                 }
 
                 if (currItem.Item2 < depth || depth == -1)
@@ -106,7 +112,10 @@ namespace PatchLoader
                 }
             }
 
-            throw new FileNotFoundException("File Not Found");
+            if (!found)
+            {
+                throw new FileNotFoundException("File Not Found");
+            }
         }
 
         public bool FirstInEntireBase(string root, string name, int depth, out string match)
@@ -137,7 +146,8 @@ namespace PatchLoader
                 }
             }
 
-            throw new FileNotFoundException("File Not Found");
+            match = null;
+            return false;
         }
 
         private bool IsMatch(Regex pattern, VSSItem item)
@@ -354,7 +364,7 @@ namespace PatchLoader
         public static SendLog sender;
 
         //Unpin + Checkout (PrepareToPush) + Checkin + Pin or Add + Pin + + Exception handling
-        public bool PushFile(string vssDir, string localDir, string localFileName, out VSSItem item)
+        public bool PushFile(string vssDir, string localDir, string localFileName, string patchName, out VSSItem item)
         {
             if(!PrepareToPushFile(vssDir, localDir, localFileName))
             {
@@ -375,18 +385,6 @@ namespace PatchLoader
                 Pin(item, item.VersionNumber);
                 sender($"{item.Spec} pinned");
 
-                string SSExeFullName = Path.Combine(Properties.Settings.Default.SSPath, "ss.exe");
-
-                Process p = new Process();
-                p.StartInfo.FileName = "cmd.exe";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.RedirectStandardInput = true;
-                p.Start();
-
-                p.StandardInput.WriteLine($"set SSDIR={basePath}");
-                p.StandardInput.WriteLine($"\"{SSExeFullName}\" Comment \"{item.Spec}\"");
-                p.StandardInput.WriteLine($"Патч {new DirectoryInfo(localDir).Name}");
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -406,6 +404,18 @@ namespace PatchLoader
                     sender($"{item.Spec} pinned");
                 }
             }
+
+            Process p = new Process();
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+
+            p.StandardInput.WriteLine($"set SSDIR={basePath}");
+            p.StandardInput.WriteLine($"\"{SSExeFullName}\" Comment \"{item.Spec}\"");
+            p.StandardInput.WriteLine($"Patch {patchName}");
 
             return true;
         }
@@ -429,7 +439,7 @@ namespace PatchLoader
 
             vssPathCheckedOutToAnotherUser = new List<string>();
 
-            PushDirRec(localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser);
+            PushDirRec(localDir, localDir, patchFiles, remoteDir, linkDir, vssPathCheckedOutToAnotherUser);
 
             if (vssPathCheckedOutToAnotherUser.Count > 0)
             {
@@ -548,6 +558,7 @@ namespace PatchLoader
         public void PushDirRec
         (
             DirectoryInfo localDir, 
+            DirectoryInfo patchDir,
             List<FileInfoWithPatchOptions> patchFiles, 
             VSSItem remoteDir, 
             VSSItem linkDir,
@@ -562,7 +573,7 @@ namespace PatchLoader
                     if (fi.AddInRepDir)
                     {
                         sender($"{fi.FileInfo.Name} добавляется в {remoteDir.Spec}...");
-                        if (/*remoteDir != null && */PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        if (/*remoteDir != null && */PushFile(remoteDir.Spec, localDir.FullName, fi.FileInfo.Name, patchDir.Name, out VSSItem item))
                         {
                             CreateLink(item, linkDir);
                         }
@@ -574,7 +585,7 @@ namespace PatchLoader
                     else if (fi.AddToPatch)
                     {
                         sender($"{fi.FileInfo.Name} добавляется в {linkDir.Spec}...");
-                        if (/*linkDir != null && */!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, out VSSItem item))
+                        if (/*linkDir != null && */!PushFile(linkDir.Spec, localDir.FullName, fi.FileInfo.Name, patchDir.Name, out VSSItem item))
                         {
                             vssPathCheckedOutToAnotherUser.Add($"{linkDir.Spec}/{fi.FileInfo.Name}");
                         }
@@ -626,7 +637,7 @@ namespace PatchLoader
                     sender($"{linkSubDir.Spec} создана в {linkDir.Spec}");
                 }
 
-                PushDirRec(localSubDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser);
+                PushDirRec(localSubDir, patchDir, patchFiles, remoteSubDir, linkSubDir, vssPathCheckedOutToAnotherUser);
             }
         }
 

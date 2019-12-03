@@ -26,3 +26,5 @@ C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.Enter
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.EnterValueForm.resources
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.LogForm.resources
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.SearchForm.resources
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.LogForm.resources
+C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.SearchForm.resources

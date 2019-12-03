@@ -226,17 +226,20 @@ namespace PatchLoader
             lf.AddToLog("Проверка патча");
             Thread th = new Thread(() =>
             {
-                DisableVSSButtons();
+            DisableVSSButtons();
 
-                if (CheckPatch(patchCopyDir, patchFiles))
+            if (CheckPatch(patchCopyDir, patchFiles))
+            {
+                lf.AddToLog("Выкладывание патча");
+                if (patchUtils.PushPatch(patchCopyDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
                 {
-                    lf.AddToLog("Выкладывание патча");
-                    if (patchUtils.PushPatch(patchCopyDir, patchFiles, out List<string> vssPathCheckedOutToAnotherUser))
+                    lf.AddToLog(Environment.NewLine + "Патч выложен!");
+                    if (MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
                     {
-                        lf.AddToLog(Environment.NewLine + "Патч выложен!");
-                        if (MessageBox.Show("Патч выложен!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
+                        if (!lf.IsDisposed)
                         {
-                            lf.Close();
+                            lf.Invoke(new Action(() => lf.Close()));
+                    }
                         }
                     }
                     else
@@ -309,9 +312,12 @@ namespace PatchLoader
                         Properties.Settings.Default.ScriptsSubdir,
                         Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList());
 
-                    if(MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
+                    if (MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
                     {
-                        lf.Close();
+                        if (!lf.IsDisposed)
+                        {
+                            lf.Close();
+                        }
                     }
 
                     EnableVSSButtons();
@@ -341,7 +347,10 @@ namespace PatchLoader
 
                     if(MessageBox.Show("Папка создана!", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information) == DialogResult.OK)
                     {
-                        lf.Close();
+                        if (!lf.IsDisposed)
+                        {
+                            lf.Close();
+                        }
                     }
 
                     EnableVSSButtons();

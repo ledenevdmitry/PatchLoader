@@ -15,11 +15,15 @@ namespace PatchLoader
         public LogForm()
         {
             InitializeComponent();
-        }
+        }        
 
         public void AddToLog(string entry)
         {
-            TbMain.AppendText(entry + Environment.NewLine);
+            try
+            {
+                TbMain.Invoke(new Action(() => TbMain.AppendText(entry + Environment.NewLine)));
+            }
+            catch { }
         }
     }
 }
