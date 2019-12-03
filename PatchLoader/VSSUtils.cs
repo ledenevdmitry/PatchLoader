@@ -385,7 +385,7 @@ namespace PatchLoader
                 p.Start();
 
                 p.StandardInput.WriteLine($"set SSDIR={basePath}");
-                p.StandardInput.WriteLine($"\"{SSExeFullName}\" Comment {item.Spec}");
+                p.StandardInput.WriteLine($"\"{SSExeFullName}\" Comment \"{item.Spec}\"");
                 p.StandardInput.WriteLine($"Патч {new DirectoryInfo(localDir).Name}");
             }
             catch (System.Runtime.InteropServices.COMException exc)
