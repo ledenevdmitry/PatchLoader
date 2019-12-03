@@ -59,5 +59,8 @@ Workflows</Value>
     <Setting Name="SearchRoots" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SSPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\Microsoft Visual SourceSafe</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

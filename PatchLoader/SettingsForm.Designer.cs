@@ -53,6 +53,8 @@
             this.LbInfaSubdir = new System.Windows.Forms.Label();
             this.TbInstallerPath = new System.Windows.Forms.TextBox();
             this.LbInstallerPath = new System.Windows.Forms.Label();
+            this.TbSSPath = new System.Windows.Forms.TextBox();
+            this.LbSSPath = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LbRemoteBase
@@ -108,7 +110,7 @@
             this.BtSubmit.Location = new System.Drawing.Point(15, 290);
             this.BtSubmit.Name = "BtSubmit";
             this.BtSubmit.Size = new System.Drawing.Size(657, 35);
-            this.BtSubmit.TabIndex = 24;
+            this.BtSubmit.TabIndex = 26;
             this.BtSubmit.Text = "Применить";
             this.BtSubmit.UseVisualStyleBackColor = true;
             this.BtSubmit.Click += new System.EventHandler(this.BtSubmit_Click);
@@ -155,7 +157,7 @@
             this.TbNotToPatch.Multiline = true;
             this.TbNotToPatch.Name = "TbNotToPatch";
             this.TbNotToPatch.Size = new System.Drawing.Size(197, 52);
-            this.TbNotToPatch.TabIndex = 21;
+            this.TbNotToPatch.TabIndex = 23;
             // 
             // LbNotToPatch
             // 
@@ -164,7 +166,7 @@
             this.LbNotToPatch.MaximumSize = new System.Drawing.Size(120, 0);
             this.LbNotToPatch.Name = "LbNotToPatch";
             this.LbNotToPatch.Size = new System.Drawing.Size(114, 39);
-            this.LbNotToPatch.TabIndex = 20;
+            this.LbNotToPatch.TabIndex = 22;
             this.LbNotToPatch.Text = "Не добавлять в патч (регулярное выражение)";
             // 
             // TbNotToRep
@@ -173,7 +175,7 @@
             this.TbNotToRep.Multiline = true;
             this.TbNotToRep.Name = "TbNotToRep";
             this.TbNotToRep.Size = new System.Drawing.Size(197, 52);
-            this.TbNotToRep.TabIndex = 19;
+            this.TbNotToRep.TabIndex = 21;
             // 
             // LbNotToRep
             // 
@@ -182,7 +184,7 @@
             this.LbNotToRep.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbNotToRep.Name = "LbNotToRep";
             this.LbNotToRep.Size = new System.Drawing.Size(126, 39);
-            this.LbNotToRep.TabIndex = 18;
+            this.LbNotToRep.TabIndex = 20;
             this.LbNotToRep.Text = "Не добавлять в общую папку (регулярное выражение)";
             // 
             // LbRepStructureScripts
@@ -211,7 +213,7 @@
             this.TbRepStructureInfa.Name = "TbRepStructureInfa";
             this.TbRepStructureInfa.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbRepStructureInfa.Size = new System.Drawing.Size(197, 65);
-            this.TbRepStructureInfa.TabIndex = 23;
+            this.TbRepStructureInfa.TabIndex = 25;
             // 
             // LbRepStructureInfa
             // 
@@ -220,7 +222,7 @@
             this.LbRepStructureInfa.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbRepStructureInfa.Name = "LbRepStructureInfa";
             this.LbRepStructureInfa.Size = new System.Drawing.Size(103, 39);
-            this.LbRepStructureInfa.TabIndex = 22;
+            this.LbRepStructureInfa.TabIndex = 24;
             this.LbRepStructureInfa.Text = "Структура папок в репозитории для информатики";
             // 
             // TbScriptsSubdir
@@ -271,11 +273,29 @@
             this.LbInstallerPath.TabIndex = 14;
             this.LbInstallerPath.Text = "Путь до PatchInstaller";
             // 
+            // TbSSPath
+            // 
+            this.TbSSPath.Location = new System.Drawing.Point(466, 60);
+            this.TbSSPath.Name = "TbSSPath";
+            this.TbSSPath.Size = new System.Drawing.Size(197, 20);
+            this.TbSSPath.TabIndex = 19;
+            // 
+            // LbSSPath
+            // 
+            this.LbSSPath.AutoSize = true;
+            this.LbSSPath.Location = new System.Drawing.Point(344, 63);
+            this.LbSSPath.Name = "LbSSPath";
+            this.LbSSPath.Size = new System.Drawing.Size(79, 13);
+            this.LbSSPath.TabIndex = 18;
+            this.LbSSPath.Text = "Путь до ss.exe";
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(681, 337);
+            this.Controls.Add(this.TbSSPath);
+            this.Controls.Add(this.LbSSPath);
             this.Controls.Add(this.TbInstallerPath);
             this.Controls.Add(this.LbInstallerPath);
             this.Controls.Add(this.TbInfaSubdir);
@@ -335,5 +355,7 @@
         private System.Windows.Forms.Label LbInfaSubdir;
         private System.Windows.Forms.TextBox TbInstallerPath;
         private System.Windows.Forms.Label LbInstallerPath;
+        private System.Windows.Forms.TextBox TbSSPath;
+        private System.Windows.Forms.Label LbSSPath;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.SourceSafe.Interop;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace PatchLoader
 
         public string Location { get; set; }
         public string Login { get; set; }
+        private string basePath;
 
         public VSSUtils(string location, string login)
         {
@@ -23,6 +25,7 @@ namespace PatchLoader
             this.Login = login;
             stopSearch = false;
             Connect();
+            basePath = VSSDB.SrcSafeIni.ToUpper().Replace("SRCSAFE.INI", "");
         }
 
         public void Connect()
@@ -76,7 +79,7 @@ namespace PatchLoader
 
         public bool stopSearch;
 
-        public IEnumerable<string> AllInEntireBase(string root, string filename, int depth)
+        public IEnumerable<string> AllInEntireBase(string root, string name, int depth)
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
@@ -84,7 +87,7 @@ namespace PatchLoader
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if ((VSSItemType)currItem.Item1.Type == VSSItemType.VSSITEM_FILE && filename.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
+                if (name.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     yield return currItem.Item1.Spec;
@@ -106,7 +109,7 @@ namespace PatchLoader
             throw new FileNotFoundException("File Not Found");
         }
 
-        public bool FirstInEntireBase(string root, string filename, int depth, out string match)
+        public bool FirstInEntireBase(string root, string name, int depth, out string match)
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
@@ -114,7 +117,7 @@ namespace PatchLoader
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if ((VSSItemType)currItem.Item1.Type == VSSItemType.VSSITEM_FILE && filename.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
+                if (name.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     match = currItem.Item1.Spec;
@@ -371,6 +374,19 @@ namespace PatchLoader
 
                 Pin(item, item.VersionNumber);
                 sender($"{item.Spec} pinned");
+
+                string SSExeFullName = Path.Combine(Properties.Settings.Default.SSPath, "ss.exe");
+
+                Process p = new Process();
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardInput = true;
+                p.Start();
+
+                p.StandardInput.WriteLine($"set SSDIR={basePath}");
+                p.StandardInput.WriteLine($"\"{SSExeFullName}\" Comment {item.Spec}");
+                p.StandardInput.WriteLine($"Патч {new DirectoryInfo(localDir).Name}");
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {

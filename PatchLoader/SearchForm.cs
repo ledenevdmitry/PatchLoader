@@ -132,5 +132,28 @@ namespace PatchLoader
                 NudDepth.Value = -1;
             }
         }
+
+        private void SearchForm_Resize(object sender, EventArgs e)
+        {
+            NudDepth.Left = ClientRectangle.Width - NudDepth.Width - 8;
+            CbDepth.Left = NudDepth.Left - CbDepth.Width - 8;
+            TbFileName.Width = ClientRectangle.Width - LbFileName.Width - CbDepth.Width - NudDepth.Width - 8 * 5;
+
+            LbResult.Left = ClientRectangle.Width / 2 + 8 / 2;
+            TbResult.Left = ClientRectangle.Width / 2 + 8 / 2;
+
+            LbRoots.Left = 8;
+            TbRoots.Left = 8;
+
+            TbRoots.Width = ClientRectangle.Width / 2 - 8 * 3 / 2;
+            TbResult.Width = ClientRectangle.Width / 2 - 8 * 3 / 2;
+
+            TbRoots.Height = ClientRectangle.Height - LbRoots.Bottom - BtFindFirst.Height - 8 * 3;
+            TbResult.Height = ClientRectangle.Height - LbRoots.Bottom - BtFindFirst.Height - 8 * 3;
+
+            BtFindFirst.Top = ClientRectangle.Height - BtFindFirst.Height - 8;
+            BtFindAll.Top = ClientRectangle.Height - BtFindAll.Height - 8;
+            BtStopSearch.Top = ClientRectangle.Height - BtStopSearch.Height - 8;
+        }
     }
 }
