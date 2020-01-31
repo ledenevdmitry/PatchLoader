@@ -21,6 +21,11 @@ namespace PatchLoader
             InitializeComponent();
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             TbPatchLocation.Text = Properties.Settings.Default.LastSavedDir;
+
+            string remoteRoot = Properties.Settings.Default.RemoteRoot;
+            DgvFileList.Columns[1].HeaderText =
+                string.IsNullOrWhiteSpace(remoteRoot) ? "Добавить в общую папку" : $"Добавить в {remoteRoot}";
+
             ResizeForm();
         }
 
@@ -76,7 +81,7 @@ namespace PatchLoader
                     currRow.Cells[2].Value = addToPatch;
                 }
             }
-            BtInstallToTest.Enabled = BtPush.Enabled = BtCreateFileSc.Enabled = true;
+            BtInstallToTest.Enabled = BtPush.Enabled = BtCreateFileSc.Enabled = BtEditFileSc.Enabled = true;
             ResizeForm();
         }
 
@@ -110,6 +115,10 @@ namespace PatchLoader
                 if (Directory.Exists(fbd.SelectedPath))
                 {
                     DirectoryInfo patchDir = new DirectoryInfo(fbd.SelectedPath);
+                    if(!File.Exists(Path.Combine(fbd.SelectedPath, "file_sc.txt")))
+                    {
+                        PatchUtils.CreateFPScenarioByFiles(patchDir);
+                    }
                     RefreshList(patchDir);
                 }
                 else
@@ -170,19 +179,6 @@ namespace PatchLoader
                 File.Copy(newPath, newPath.Replace(sourcePath, destPath), true);
         }
 
-        private void SetAttributesNormal(DirectoryInfo dir)
-        {
-            foreach (var subDir in dir.GetDirectories())
-            {
-                SetAttributesNormal(subDir);
-                subDir.Attributes = FileAttributes.Normal;
-            }
-            foreach (var file in dir.GetFiles())
-            {
-                file.Attributes = FileAttributes.Normal;
-            }
-        }
-
         private void BtPush_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(TbPatchLocation.Text))
@@ -192,12 +188,12 @@ namespace PatchLoader
 
                 if (patchCopyDir.Exists)
                 {
-                    SetAttributesNormal(patchCopyDir);
+                    OSUtils.SetAttributesNormal(patchCopyDir);
                     Directory.Delete(patchCopyDir.FullName, true);
                 }
 
                 CopyDir(patchDir.FullName, patchCopyDir.FullName);
-                SetAttributesNormal(patchCopyDir);
+                OSUtils.SetAttributesNormal(patchCopyDir);
 
                 List<FileInfoWithPatchOptions> patchFiles =
                     DgvFileList.Rows.Cast<DataGridViewRow>()
@@ -249,7 +245,7 @@ namespace PatchLoader
                     }
                 }
 
-                SetAttributesNormal(patchCopyDir);
+                OSUtils.SetAttributesNormal(patchCopyDir);
                 Directory.Delete(patchCopyDir.FullName, true);
 
                 EnableVSSButtons();
@@ -280,6 +276,7 @@ namespace PatchLoader
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
             BtInstallToTest.Top = ClientRectangle.Height - BtInstallToTest.Height - 8;
             BtCreateFileSc.Top = ClientRectangle.Height - BtCreateFileSc.Height - 8;
+            BtEditFileSc.Top = ClientRectangle.Height - BtEditFileSc.Height - 8;
 
             BtRefreshList.Left = ClientRectangle.Width - BtRefreshList.Width - 8;
             BtPatchLocation.Left = BtRefreshList.Left - BtRefreshList.Width - 8;
@@ -365,18 +362,25 @@ namespace PatchLoader
             if (Directory.Exists(TbPatchLocation.Text))
             {
                 string fileScPath = Path.Combine(TbPatchLocation.Text, "file_sc.txt");
+                FileInfo patchInstallerPath = new FileInfo(Properties.Settings.Default.PatchInstallerPath);
+                string patchInstallerName = patchInstallerPath.Name;
+                string patchInstallerDir = patchInstallerPath.DirectoryName;
+                string drive = Path.GetPathRoot(patchInstallerPath.FullName).Replace("\\", "");
+
                 if (File.Exists(fileScPath))
                 {
-                    string command = $"cmd /min /C \"set __COMPAT_LAYER = RUNASINVOKER && start \"\" Patch_installer_Pr.exe STDEV11 1 \"{fileScPath}\" 1\"";
+                    string command = $"cmd /min /C \"set __COMPAT_LAYER = RUNASINVOKER && start \"\" {patchInstallerName} STDEV11 1 \"{TbPatchLocation.Text}\" 1\"";
 
                     Process p = new Process();
                     p.StartInfo.FileName = "cmd.exe";
                     p.StartInfo.UseShellExecute = false;
                     p.StartInfo.RedirectStandardOutput = true;
                     p.StartInfo.RedirectStandardInput = true;
+                    p.StartInfo.CreateNoWindow = true;
                     p.Start();
 
-                    p.StandardInput.WriteLine($"cd {Properties.Settings.Default.PatchInstallerPath}");
+                    p.StandardInput.WriteLine(drive);
+                    p.StandardInput.WriteLine($"cd {patchInstallerDir}");
                     p.StandardInput.WriteLine(command);
                 }
                 else
@@ -396,6 +400,7 @@ namespace PatchLoader
             {
                 DirectoryInfo patchDir = new DirectoryInfo(TbPatchLocation.Text);
                 PatchUtils.CreateFPScenarioByFiles(patchDir);
+                RefreshList(patchDir);
             }
             else
             {
@@ -407,6 +412,28 @@ namespace PatchLoader
         {
             SearchForm sf = new SearchForm();
             sf.ShowDialog();
+        }
+
+        private void BtEditFileSc_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(TbPatchLocation.Text))
+            {
+                DirectoryInfo patchDir = new DirectoryInfo(TbPatchLocation.Text);
+                string fileScName = Path.Combine(patchDir.FullName, "file_sc.txt");
+                if (File.Exists(fileScName))
+                {
+                    EditFileScForm efsf = new EditFileScForm(new FileInfo(fileScName));
+                    efsf.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("file_sc.txt не найден!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

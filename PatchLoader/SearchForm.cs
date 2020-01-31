@@ -53,15 +53,15 @@ namespace PatchLoader
                         found = true;
                         break;
                     }
-                    else
-                    {
-                        MessageBox.Show("Файл не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
                 }
 
                 if (found)
                 {
-                    MessageBox.Show("Поиск завершен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Поиск завершен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                }
+                else
+                {
+                    MessageBox.Show("Файл не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 EnableSearchButtons();
@@ -116,6 +116,7 @@ namespace PatchLoader
                 EnableStopButton();
                 DisableSearchButtons();
 
+                bool found = false;
                 foreach (string root in roots)
                 {
                     try
@@ -124,13 +125,20 @@ namespace PatchLoader
                         {
                             TbResult.Invoke(new Action(() => TbResult.AppendText(res + Environment.NewLine)));
                         }
-                        MessageBox.Show("Поиск завершен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        found = true;
                     }
-                    catch (FileNotFoundException exc)
-                    {
-                        MessageBox.Show(exc.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    catch (FileNotFoundException) { }
                 }
+
+                if (found)
+                {
+                    MessageBox.Show("Поиск завершен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                }
+                else
+                {
+                    MessageBox.Show("Файл не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
                 EnableSearchButtons();
                 DisableStopButton();
             });

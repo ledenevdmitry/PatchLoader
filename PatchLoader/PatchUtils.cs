@@ -76,6 +76,34 @@ namespace PatchLoader
         {
             SortedList<int, string> priorityLinePair = new SortedList<int, string>(new DuplicateKeyComparer<int>());
 
+            string startWFDir = Path.Combine(patchDirectory.FullName, "start_wf");
+            DirectoryInfo dir = new DirectoryInfo(startWFDir);
+            if (Directory.Exists(startWFDir))
+            {
+                OSUtils.SetAttributesNormal(dir);
+                OSUtils.DeleteDir(dir);
+            }
+
+            foreach (FileInfo fileInfo in patchDirectory.EnumerateFiles("*.xml", SearchOption.AllDirectories))
+            {
+                if(fileInfo.Directory.Name.Equals(Properties.Settings.Default.STWFFolder, StringComparison.InvariantCultureIgnoreCase) || 
+                   fileInfo.Directory.Parent != null && fileInfo.Directory.Parent.Name.Equals(Properties.Settings.Default.STWFFolder, StringComparison.InvariantCultureIgnoreCase) && fileInfo.Directory.Name.Equals("WORKFLOWS", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (Regex.IsMatch(fileInfo.Name, Properties.Settings.Default.CreateSTWFRegex))
+                    {
+                        Directory.CreateDirectory(startWFDir);
+
+                        string wfName = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+                        string startWFFile = Path.Combine(startWFDir, $"start_{wfName}.txt");
+                        using (File.Create(startWFFile)) { }
+                        using (StreamWriter tw = new StreamWriter(startWFFile, false, Encoding.GetEncoding("Windows-1251")))
+                        {
+                            tw.Write($" -f FLOW_CONTROL -wait {wfName}");
+                        }
+                    }
+                }
+            }
+
             foreach (FileInfo fileInfo in patchDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories))
             {
                 string fromFPPath = fileInfo.FullName.Substring(patchDirectory.FullName.Length + 1);

@@ -92,7 +92,7 @@ namespace PatchLoader
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if (name.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
+                if (currItem.Item1.Name.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1)
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     yield return currItem.Item1.Spec;
@@ -106,13 +106,13 @@ namespace PatchLoader
                         sender($"Запланирован поиск в {currItem.Item1.Spec} ...");
                         foreach (VSSItem subItem in currItem.Item1.Items)
                         {
-                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, depth == -1 ? -1 : depth + 1));
+                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, currItem.Item2 + 1));
                         }
                     }
                 }
             }
 
-            if (!found)
+            if (!found && !stopSearch)
             {
                 throw new FileNotFoundException("File Not Found");
             }
@@ -126,7 +126,7 @@ namespace PatchLoader
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if (name.Equals(currItem.Item1.Name, StringComparison.InvariantCultureIgnoreCase))
+                if (currItem.Item1.Name.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1)
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     match = currItem.Item1.Spec;
@@ -140,7 +140,7 @@ namespace PatchLoader
                         sender($"Запланирован поиск в {currItem.Item1.Spec} ...");
                         foreach (VSSItem subItem in currItem.Item1.Items)
                         {
-                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, depth == -1 ? -1 : depth + 1));
+                            queue.Enqueue(new Tuple<VSSItem, int>(subItem, currItem.Item2 + 1));
                         }
                     }
                 }
@@ -381,9 +381,15 @@ namespace PatchLoader
 
                 item.Checkin("", localPath);
                 sender($"{item.Spec} checked in");
-
-                Pin(item, item.VersionNumber);
-                sender($"{item.Spec} pinned");
+                try
+                {
+                    Pin(item, item.VersionNumber);
+                    sender($"{item.Spec} pinned");
+                }
+                catch
+                {
+                    sender($"Cannot pin {item.Spec}");
+                }
 
             }
             catch (System.Runtime.InteropServices.COMException exc)
@@ -400,8 +406,15 @@ namespace PatchLoader
                     item = dir.Add(localPath);
                     sender($"{item.Spec} добавлен");
 
-                    Pin(item, item.VersionNumber);
-                    sender($"{item.Spec} pinned");
+                    try
+                    {
+                        Pin(item, item.VersionNumber);
+                        sender($"{item.Spec} pinned");
+                    }
+                    catch
+                    {
+                        sender($"Cannot pin {item.Spec}");
+                    }
                 }
             }
 

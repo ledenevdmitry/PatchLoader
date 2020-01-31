@@ -55,6 +55,10 @@
             this.LbInstallerPath = new System.Windows.Forms.Label();
             this.TbSSPath = new System.Windows.Forms.TextBox();
             this.LbSSPath = new System.Windows.Forms.Label();
+            this.TbCreateSTWFRegex = new System.Windows.Forms.TextBox();
+            this.LbCreateSTWFRegex = new System.Windows.Forms.Label();
+            this.TbSTWFFolder = new System.Windows.Forms.TextBox();
+            this.LbSTWFFolder = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LbRemoteBase
@@ -107,7 +111,7 @@
             // 
             // BtSubmit
             // 
-            this.BtSubmit.Location = new System.Drawing.Point(15, 290);
+            this.BtSubmit.Location = new System.Drawing.Point(15, 319);
             this.BtSubmit.Name = "BtSubmit";
             this.BtSubmit.Size = new System.Drawing.Size(657, 35);
             this.BtSubmit.TabIndex = 26;
@@ -289,11 +293,47 @@
             this.LbSSPath.TabIndex = 18;
             this.LbSSPath.Text = "Путь до ss.exe";
             // 
+            // TbCreateSTWFRegex
+            // 
+            this.TbCreateSTWFRegex.Location = new System.Drawing.Point(347, 290);
+            this.TbCreateSTWFRegex.Name = "TbCreateSTWFRegex";
+            this.TbCreateSTWFRegex.Size = new System.Drawing.Size(316, 20);
+            this.TbCreateSTWFRegex.TabIndex = 28;
+            // 
+            // LbCreateSTWFRegex
+            // 
+            this.LbCreateSTWFRegex.AutoSize = true;
+            this.LbCreateSTWFRegex.Location = new System.Drawing.Point(344, 274);
+            this.LbCreateSTWFRegex.Name = "LbCreateSTWFRegex";
+            this.LbCreateSTWFRegex.Size = new System.Drawing.Size(319, 13);
+            this.LbCreateSTWFRegex.TabIndex = 27;
+            this.LbCreateSTWFRegex.Text = "Создавать stwf (маска файла потока регулярное выражение)";
+            // 
+            // TbSTWFFolder
+            // 
+            this.TbSTWFFolder.Location = new System.Drawing.Point(15, 290);
+            this.TbSTWFFolder.Name = "TbSTWFFolder";
+            this.TbSTWFFolder.Size = new System.Drawing.Size(316, 20);
+            this.TbSTWFFolder.TabIndex = 30;
+            // 
+            // LbSTWFFolder
+            // 
+            this.LbSTWFFolder.AutoSize = true;
+            this.LbSTWFFolder.Location = new System.Drawing.Point(12, 274);
+            this.LbSTWFFolder.Name = "LbSTWFFolder";
+            this.LbSTWFFolder.Size = new System.Drawing.Size(128, 13);
+            this.LbSTWFFolder.TabIndex = 29;
+            this.LbSTWFFolder.Text = "Папка с треш-потоками";
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(681, 337);
+            this.ClientSize = new System.Drawing.Size(681, 357);
+            this.Controls.Add(this.TbSTWFFolder);
+            this.Controls.Add(this.LbSTWFFolder);
+            this.Controls.Add(this.TbCreateSTWFRegex);
+            this.Controls.Add(this.LbCreateSTWFRegex);
             this.Controls.Add(this.TbSSPath);
             this.Controls.Add(this.LbSSPath);
             this.Controls.Add(this.TbInstallerPath);
@@ -357,5 +397,9 @@
         private System.Windows.Forms.Label LbInstallerPath;
         private System.Windows.Forms.TextBox TbSSPath;
         private System.Windows.Forms.Label LbSSPath;
+        private System.Windows.Forms.TextBox TbCreateSTWFRegex;
+        private System.Windows.Forms.Label LbCreateSTWFRegex;
+        private System.Windows.Forms.TextBox TbSTWFFolder;
+        private System.Windows.Forms.Label LbSTWFFolder;
     }
 }

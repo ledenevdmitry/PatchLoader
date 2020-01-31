@@ -29,6 +29,8 @@ namespace PatchLoader
             TbRepStructureInfa.Text = Properties.Settings.Default.RepStructureInfa;
             TbInstallerPath.Text = Properties.Settings.Default.PatchInstallerPath;
             TbSSPath.Text = Properties.Settings.Default.SSPath;
+            TbCreateSTWFRegex.Text = Properties.Settings.Default.CreateSTWFRegex;
+            TbSTWFFolder.Text = Properties.Settings.Default.STWFFolder;
         }
 
         private void BtSubmit_Click(object sender, EventArgs e)
@@ -48,6 +50,8 @@ namespace PatchLoader
             Properties.Settings.Default.RepStructureInfa = TbRepStructureInfa.Text;
             Properties.Settings.Default.PatchInstallerPath = TbInstallerPath.Text;
             Properties.Settings.Default.SSPath = TbSSPath.Text;
+            Properties.Settings.Default.CreateSTWFRegex = TbCreateSTWFRegex.Text;
+            Properties.Settings.Default.STWFFolder = TbSTWFFolder.Text;
 
             Properties.Settings.Default.Save();
 

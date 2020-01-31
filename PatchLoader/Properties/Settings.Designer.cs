@@ -170,7 +170,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("X:\\IPatch\\patch_ins_pr_slesh")]
+        [global::System.Configuration.DefaultSettingValueAttribute("X:\\IPatch\\patch_ins_pr_slesh\\PI.exe")]
         public string PatchInstallerPath {
             get {
                 return ((string)(this["PatchInstallerPath"]));
@@ -182,7 +182,9 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("$/Patches/Working STAB2\r\n$/Patches/Test/_ODH\r\n$/Patches/Test/_CORE\r\n$/Patches/REL" +
+            "EASE DWH_NEW_DELAYED\r\n$/Patches/RELEASE DWH_NEW/ODH\r\n$/Patches/RELEASE DWH_NEW/C" +
+            "ORE\r\n$/Patches/Working\r\n$/Patches/Production")]
         public string SearchRoots {
             get {
                 return ((string)(this["SearchRoots"]));
@@ -201,6 +203,30 @@ namespace PatchLoader.Properties {
             }
             set {
                 this["SSPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("WF_(C|Z)\\d+._FIX.*\\.xml")]
+        public string CreateSTWFRegex {
+            get {
+                return ((string)(this["CreateSTWFRegex"]));
+            }
+            set {
+                this["CreateSTWFRegex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("flow_control@rep_dw_prod")]
+        public string STWFFolder {
+            get {
+                return ((string)(this["STWFFolder"]));
+            }
+            set {
+                this["STWFFolder"] = value;
             }
         }
     }

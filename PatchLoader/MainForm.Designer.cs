@@ -33,6 +33,7 @@
             this.CreateScriptsRepositoryDirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateInfaRepositoryDirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FindToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BtPatchLocation = new System.Windows.Forms.Button();
             this.LbPatchLocation = new System.Windows.Forms.Label();
             this.TbPatchLocation = new System.Windows.Forms.TextBox();
@@ -45,7 +46,7 @@
             this.BtInstallToTest = new System.Windows.Forms.Button();
             this.BtRefreshList = new System.Windows.Forms.Button();
             this.BtCreateFileSc = new System.Windows.Forms.Button();
-            this.FindToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BtEditFileSc = new System.Windows.Forms.Button();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -92,6 +93,13 @@
             this.SettingsToolStripMenuItem.Text = "Параметры";
             this.SettingsToolStripMenuItem.Click += new System.EventHandler(this.SettingsToolStripMenuItem_Click);
             // 
+            // FindToolStripMenuItem
+            // 
+            this.FindToolStripMenuItem.Name = "FindToolStripMenuItem";
+            this.FindToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.FindToolStripMenuItem.Text = "Найти";
+            this.FindToolStripMenuItem.Click += new System.EventHandler(this.FindToolStripMenuItem_Click);
+            // 
             // BtPatchLocation
             // 
             this.BtPatchLocation.Location = new System.Drawing.Point(517, 22);
@@ -121,7 +129,7 @@
             // BtPush
             // 
             this.BtPush.Enabled = false;
-            this.BtPush.Location = new System.Drawing.Point(279, 307);
+            this.BtPush.Location = new System.Drawing.Point(482, 307);
             this.BtPush.Name = "BtPush";
             this.BtPush.Size = new System.Drawing.Size(110, 23);
             this.BtPush.TabIndex = 4;
@@ -176,7 +184,7 @@
             // BtInstallToTest
             // 
             this.BtInstallToTest.Enabled = false;
-            this.BtInstallToTest.Location = new System.Drawing.Point(163, 307);
+            this.BtInstallToTest.Location = new System.Drawing.Point(366, 307);
             this.BtInstallToTest.Name = "BtInstallToTest";
             this.BtInstallToTest.Size = new System.Drawing.Size(110, 23);
             this.BtInstallToTest.TabIndex = 8;
@@ -205,18 +213,23 @@
             this.BtCreateFileSc.UseVisualStyleBackColor = true;
             this.BtCreateFileSc.Click += new System.EventHandler(this.BtCreateFileSc_Click);
             // 
-            // FindToolStripMenuItem
+            // BtEditFileSc
             // 
-            this.FindToolStripMenuItem.Name = "FindToolStripMenuItem";
-            this.FindToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.FindToolStripMenuItem.Text = "Найти";
-            this.FindToolStripMenuItem.Click += new System.EventHandler(this.FindToolStripMenuItem_Click);
+            this.BtEditFileSc.Enabled = false;
+            this.BtEditFileSc.Location = new System.Drawing.Point(163, 307);
+            this.BtEditFileSc.Name = "BtEditFileSc";
+            this.BtEditFileSc.Size = new System.Drawing.Size(197, 23);
+            this.BtEditFileSc.TabIndex = 11;
+            this.BtEditFileSc.Text = "Редактировать файл сценария";
+            this.BtEditFileSc.UseVisualStyleBackColor = true;
+            this.BtEditFileSc.Click += new System.EventHandler(this.BtEditFileSc_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(685, 342);
+            this.Controls.Add(this.BtEditFileSc);
             this.Controls.Add(this.BtCreateFileSc);
             this.Controls.Add(this.BtRefreshList);
             this.Controls.Add(this.BtInstallToTest);
@@ -258,6 +271,7 @@
         private System.Windows.Forms.Button BtRefreshList;
         private System.Windows.Forms.Button BtCreateFileSc;
         private System.Windows.Forms.ToolStripMenuItem FindToolStripMenuItem;
+        private System.Windows.Forms.Button BtEditFileSc;
     }
 }
 
