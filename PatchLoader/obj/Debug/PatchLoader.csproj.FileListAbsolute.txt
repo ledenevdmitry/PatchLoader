@@ -29,3 +29,4 @@ C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.Sea
 C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.LogForm.resources
 C:\Users\Dmitry\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.SearchForm.resources
 C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.EditFileScForm.resources
+C:\Users\dledenev\source\repos\PatchLoader\PatchLoader\obj\Debug\PatchLoader.TestPatch.resources

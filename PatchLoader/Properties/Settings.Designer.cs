@@ -170,7 +170,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("X:\\IPatch\\patch_ins_pr_slesh\\PI.exe")]
+        [global::System.Configuration.DefaultSettingValueAttribute("X:\\Executable\\patch_ins_pr_slesh\\PI.exe")]
         public string PatchInstallerPath {
             get {
                 return ((string)(this["PatchInstallerPath"]));
@@ -227,6 +227,31 @@ namespace PatchLoader.Properties {
             }
             set {
                 this["STWFFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("X:\\Executable\\patch_ins_pr_slesh_ODH\\PI.exe")]
+        public string PatchInstallerODHPath {
+            get {
+                return ((string)(this["PatchInstallerODHPath"]));
+            }
+            set {
+                this["PatchInstallerODHPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("file_sc.*\\.|RELEASE_NOTES\\.|VSSVER2\\.|\\.xls|IVSS\\.tmp|\\\\tablespace|\\\\user|not_in_" +
+            "scenario.txt")]
+        public string ScenarioExclude {
+            get {
+                return ((string)(this["ScenarioExclude"]));
+            }
+            set {
+                this["ScenarioExclude"] = value;
             }
         }
     }

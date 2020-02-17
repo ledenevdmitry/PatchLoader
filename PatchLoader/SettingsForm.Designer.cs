@@ -59,6 +59,10 @@
             this.LbCreateSTWFRegex = new System.Windows.Forms.Label();
             this.TbSTWFFolder = new System.Windows.Forms.TextBox();
             this.LbSTWFFolder = new System.Windows.Forms.Label();
+            this.TbODHInstallerPath = new System.Windows.Forms.TextBox();
+            this.LbODHInstallerPath = new System.Windows.Forms.Label();
+            this.TbScenarioExclude = new System.Windows.Forms.TextBox();
+            this.LbScenarioExclude = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // LbRemoteBase
@@ -96,25 +100,25 @@
             // LbLinkDir
             // 
             this.LbLinkDir.AutoSize = true;
-            this.LbLinkDir.Location = new System.Drawing.Point(344, 38);
+            this.LbLinkDir.Location = new System.Drawing.Point(344, 64);
             this.LbLinkDir.Name = "LbLinkDir";
             this.LbLinkDir.Size = new System.Drawing.Size(93, 13);
-            this.LbLinkDir.TabIndex = 16;
+            this.LbLinkDir.TabIndex = 20;
             this.LbLinkDir.Text = "Папка с патчами";
             // 
             // TbLinkDir
             // 
-            this.TbLinkDir.Location = new System.Drawing.Point(466, 35);
+            this.TbLinkDir.Location = new System.Drawing.Point(466, 61);
             this.TbLinkDir.Name = "TbLinkDir";
             this.TbLinkDir.Size = new System.Drawing.Size(197, 20);
-            this.TbLinkDir.TabIndex = 17;
+            this.TbLinkDir.TabIndex = 21;
             // 
             // BtSubmit
             // 
-            this.BtSubmit.Location = new System.Drawing.Point(15, 319);
+            this.BtSubmit.Location = new System.Drawing.Point(15, 380);
             this.BtSubmit.Name = "BtSubmit";
             this.BtSubmit.Size = new System.Drawing.Size(657, 35);
-            this.BtSubmit.TabIndex = 26;
+            this.BtSubmit.TabIndex = 34;
             this.BtSubmit.Text = "Применить";
             this.BtSubmit.UseVisualStyleBackColor = true;
             this.BtSubmit.Click += new System.EventHandler(this.BtSubmit_Click);
@@ -157,38 +161,38 @@
             // 
             // TbNotToPatch
             // 
-            this.TbNotToPatch.Location = new System.Drawing.Point(466, 148);
+            this.TbNotToPatch.Location = new System.Drawing.Point(466, 174);
             this.TbNotToPatch.Multiline = true;
             this.TbNotToPatch.Name = "TbNotToPatch";
             this.TbNotToPatch.Size = new System.Drawing.Size(197, 52);
-            this.TbNotToPatch.TabIndex = 23;
+            this.TbNotToPatch.TabIndex = 27;
             // 
             // LbNotToPatch
             // 
             this.LbNotToPatch.AutoSize = true;
-            this.LbNotToPatch.Location = new System.Drawing.Point(344, 148);
+            this.LbNotToPatch.Location = new System.Drawing.Point(344, 174);
             this.LbNotToPatch.MaximumSize = new System.Drawing.Size(120, 0);
             this.LbNotToPatch.Name = "LbNotToPatch";
             this.LbNotToPatch.Size = new System.Drawing.Size(114, 39);
-            this.LbNotToPatch.TabIndex = 22;
+            this.LbNotToPatch.TabIndex = 26;
             this.LbNotToPatch.Text = "Не добавлять в патч (регулярное выражение)";
             // 
             // TbNotToRep
             // 
-            this.TbNotToRep.Location = new System.Drawing.Point(466, 90);
+            this.TbNotToRep.Location = new System.Drawing.Point(466, 116);
             this.TbNotToRep.Multiline = true;
             this.TbNotToRep.Name = "TbNotToRep";
             this.TbNotToRep.Size = new System.Drawing.Size(197, 52);
-            this.TbNotToRep.TabIndex = 21;
+            this.TbNotToRep.TabIndex = 25;
             // 
             // LbNotToRep
             // 
             this.LbNotToRep.AutoSize = true;
-            this.LbNotToRep.Location = new System.Drawing.Point(344, 90);
+            this.LbNotToRep.Location = new System.Drawing.Point(344, 116);
             this.LbNotToRep.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbNotToRep.Name = "LbNotToRep";
             this.LbNotToRep.Size = new System.Drawing.Size(126, 39);
-            this.LbNotToRep.TabIndex = 20;
+            this.LbNotToRep.TabIndex = 24;
             this.LbNotToRep.Text = "Не добавлять в общую папку (регулярное выражение)";
             // 
             // LbRepStructureScripts
@@ -212,21 +216,21 @@
             // 
             // TbRepStructureInfa
             // 
-            this.TbRepStructureInfa.Location = new System.Drawing.Point(466, 206);
+            this.TbRepStructureInfa.Location = new System.Drawing.Point(466, 232);
             this.TbRepStructureInfa.Multiline = true;
             this.TbRepStructureInfa.Name = "TbRepStructureInfa";
             this.TbRepStructureInfa.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbRepStructureInfa.Size = new System.Drawing.Size(197, 65);
-            this.TbRepStructureInfa.TabIndex = 25;
+            this.TbRepStructureInfa.TabIndex = 29;
             // 
             // LbRepStructureInfa
             // 
             this.LbRepStructureInfa.AutoSize = true;
-            this.LbRepStructureInfa.Location = new System.Drawing.Point(344, 206);
+            this.LbRepStructureInfa.Location = new System.Drawing.Point(344, 232);
             this.LbRepStructureInfa.MaximumSize = new System.Drawing.Size(130, 0);
             this.LbRepStructureInfa.Name = "LbRepStructureInfa";
             this.LbRepStructureInfa.Size = new System.Drawing.Size(103, 39);
-            this.LbRepStructureInfa.TabIndex = 24;
+            this.LbRepStructureInfa.TabIndex = 28;
             this.LbRepStructureInfa.Text = "Структура папок в репозитории для информатики";
             // 
             // TbScriptsSubdir
@@ -266,7 +270,7 @@
             this.TbInstallerPath.Location = new System.Drawing.Point(466, 9);
             this.TbInstallerPath.Name = "TbInstallerPath";
             this.TbInstallerPath.Size = new System.Drawing.Size(197, 20);
-            this.TbInstallerPath.TabIndex = 15;
+            this.TbInstallerPath.TabIndex = 17;
             // 
             // LbInstallerPath
             // 
@@ -274,62 +278,100 @@
             this.LbInstallerPath.Location = new System.Drawing.Point(344, 12);
             this.LbInstallerPath.Name = "LbInstallerPath";
             this.LbInstallerPath.Size = new System.Drawing.Size(113, 13);
-            this.LbInstallerPath.TabIndex = 14;
+            this.LbInstallerPath.TabIndex = 16;
             this.LbInstallerPath.Text = "Путь до PatchInstaller";
             // 
             // TbSSPath
             // 
-            this.TbSSPath.Location = new System.Drawing.Point(466, 60);
+            this.TbSSPath.Location = new System.Drawing.Point(466, 86);
             this.TbSSPath.Name = "TbSSPath";
             this.TbSSPath.Size = new System.Drawing.Size(197, 20);
-            this.TbSSPath.TabIndex = 19;
+            this.TbSSPath.TabIndex = 23;
             // 
             // LbSSPath
             // 
             this.LbSSPath.AutoSize = true;
-            this.LbSSPath.Location = new System.Drawing.Point(344, 63);
+            this.LbSSPath.Location = new System.Drawing.Point(344, 89);
             this.LbSSPath.Name = "LbSSPath";
             this.LbSSPath.Size = new System.Drawing.Size(79, 13);
-            this.LbSSPath.TabIndex = 18;
+            this.LbSSPath.TabIndex = 22;
             this.LbSSPath.Text = "Путь до ss.exe";
             // 
             // TbCreateSTWFRegex
             // 
-            this.TbCreateSTWFRegex.Location = new System.Drawing.Point(347, 290);
+            this.TbCreateSTWFRegex.Location = new System.Drawing.Point(347, 352);
             this.TbCreateSTWFRegex.Name = "TbCreateSTWFRegex";
             this.TbCreateSTWFRegex.Size = new System.Drawing.Size(316, 20);
-            this.TbCreateSTWFRegex.TabIndex = 28;
+            this.TbCreateSTWFRegex.TabIndex = 33;
             // 
             // LbCreateSTWFRegex
             // 
             this.LbCreateSTWFRegex.AutoSize = true;
-            this.LbCreateSTWFRegex.Location = new System.Drawing.Point(344, 274);
+            this.LbCreateSTWFRegex.Location = new System.Drawing.Point(344, 336);
             this.LbCreateSTWFRegex.Name = "LbCreateSTWFRegex";
             this.LbCreateSTWFRegex.Size = new System.Drawing.Size(319, 13);
-            this.LbCreateSTWFRegex.TabIndex = 27;
+            this.LbCreateSTWFRegex.TabIndex = 32;
             this.LbCreateSTWFRegex.Text = "Создавать stwf (маска файла потока регулярное выражение)";
             // 
             // TbSTWFFolder
             // 
-            this.TbSTWFFolder.Location = new System.Drawing.Point(15, 290);
+            this.TbSTWFFolder.Location = new System.Drawing.Point(15, 352);
             this.TbSTWFFolder.Name = "TbSTWFFolder";
             this.TbSTWFFolder.Size = new System.Drawing.Size(316, 20);
-            this.TbSTWFFolder.TabIndex = 30;
+            this.TbSTWFFolder.TabIndex = 31;
             // 
             // LbSTWFFolder
             // 
             this.LbSTWFFolder.AutoSize = true;
-            this.LbSTWFFolder.Location = new System.Drawing.Point(12, 274);
+            this.LbSTWFFolder.Location = new System.Drawing.Point(12, 336);
             this.LbSTWFFolder.Name = "LbSTWFFolder";
             this.LbSTWFFolder.Size = new System.Drawing.Size(128, 13);
-            this.LbSTWFFolder.TabIndex = 29;
+            this.LbSTWFFolder.TabIndex = 30;
             this.LbSTWFFolder.Text = "Папка с треш-потоками";
+            // 
+            // TbODHInstallerPath
+            // 
+            this.TbODHInstallerPath.Location = new System.Drawing.Point(466, 35);
+            this.TbODHInstallerPath.Name = "TbODHInstallerPath";
+            this.TbODHInstallerPath.Size = new System.Drawing.Size(197, 20);
+            this.TbODHInstallerPath.TabIndex = 19;
+            // 
+            // LbODHInstallerPath
+            // 
+            this.LbODHInstallerPath.AutoSize = true;
+            this.LbODHInstallerPath.Location = new System.Drawing.Point(344, 38);
+            this.LbODHInstallerPath.Name = "LbODHInstallerPath";
+            this.LbODHInstallerPath.Size = new System.Drawing.Size(98, 13);
+            this.LbODHInstallerPath.TabIndex = 18;
+            this.LbODHInstallerPath.Text = "ODH PatchInstaller";
+            // 
+            // TbScenarioExclude
+            // 
+            this.TbScenarioExclude.Location = new System.Drawing.Point(134, 277);
+            this.TbScenarioExclude.Multiline = true;
+            this.TbScenarioExclude.Name = "TbScenarioExclude";
+            this.TbScenarioExclude.Size = new System.Drawing.Size(197, 45);
+            this.TbScenarioExclude.TabIndex = 15;
+            // 
+            // LbScenarioExclude
+            // 
+            this.LbScenarioExclude.AutoSize = true;
+            this.LbScenarioExclude.Location = new System.Drawing.Point(12, 280);
+            this.LbScenarioExclude.MaximumSize = new System.Drawing.Size(130, 0);
+            this.LbScenarioExclude.Name = "LbScenarioExclude";
+            this.LbScenarioExclude.Size = new System.Drawing.Size(122, 39);
+            this.LbScenarioExclude.TabIndex = 14;
+            this.LbScenarioExclude.Text = "Не добавлять в сценарий (регулярное выражение)";
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(681, 357);
+            this.ClientSize = new System.Drawing.Size(681, 421);
+            this.Controls.Add(this.TbScenarioExclude);
+            this.Controls.Add(this.LbScenarioExclude);
+            this.Controls.Add(this.TbODHInstallerPath);
+            this.Controls.Add(this.LbODHInstallerPath);
             this.Controls.Add(this.TbSTWFFolder);
             this.Controls.Add(this.LbSTWFFolder);
             this.Controls.Add(this.TbCreateSTWFRegex);
@@ -401,5 +443,9 @@
         private System.Windows.Forms.Label LbCreateSTWFRegex;
         private System.Windows.Forms.TextBox TbSTWFFolder;
         private System.Windows.Forms.Label LbSTWFFolder;
+        private System.Windows.Forms.TextBox TbODHInstallerPath;
+        private System.Windows.Forms.Label LbODHInstallerPath;
+        private System.Windows.Forms.TextBox TbScenarioExclude;
+        private System.Windows.Forms.Label LbScenarioExclude;
     }
 }

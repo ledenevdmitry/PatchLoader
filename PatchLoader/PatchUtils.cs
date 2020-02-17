@@ -9,6 +9,32 @@ using System.Windows.Forms;
 
 namespace PatchLoader
 {
+    class ScenarioKey : IComparable
+    {
+        int orderNumber;
+        string line;
+
+        public ScenarioKey(int orderNumber, string line)
+        {
+            this.orderNumber = orderNumber;
+            this.line = line;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if(orderNumber < ((ScenarioKey)obj).orderNumber)
+            {
+                return -1;
+            }
+            if (orderNumber > ((ScenarioKey)obj).orderNumber)
+            {
+                return 1;
+            }
+
+            return line.CompareTo(((ScenarioKey)obj).line);
+        }
+    }
+
     class PatchUtils
     {
         private readonly string remoteRoot;
@@ -74,7 +100,7 @@ namespace PatchLoader
 
         public static bool CreateFPScenarioByFiles(DirectoryInfo patchDirectory)
         {
-            SortedList<int, string> priorityLinePair = new SortedList<int, string>(new DuplicateKeyComparer<int>());
+            SortedList<ScenarioKey, string> priorityLinePair = new SortedList<ScenarioKey, string>(new DuplicateKeyComparer<ScenarioKey>());
 
             string startWFDir = Path.Combine(patchDirectory.FullName, "start_wf");
             DirectoryInfo dir = new DirectoryInfo(startWFDir);
@@ -111,7 +137,7 @@ namespace PatchLoader
                 {
                     if (CreateScenarioLineByFromFPDirPath(fromFPPath, out string scenarioLine))
                     {
-                        priorityLinePair.Add(Priority(scenarioLine), scenarioLine);
+                        priorityLinePair.Add(new ScenarioKey(Priority(scenarioLine), scenarioLine), scenarioLine);
                     }
                 }
             }
@@ -121,7 +147,7 @@ namespace PatchLoader
             return true;
         }
 
-        static Regex WrongFiles = new Regex(@"file_sc.*\.|RELEASE_NOTES\.|VSSVER2\.|\.xls|IVSS\.tmp|\\tablespace|\\user", RegexOptions.IgnoreCase);
+        static Regex WrongFiles = new Regex(@"file_sc.*\.|RELEASE_NOTES\.|VSSVER2\.|\.xls|IVSS\.tmp|\\tablespace|\\user|not_in_scenario.txt", RegexOptions.IgnoreCase);
         static Regex ORASchemaFromScenarioLine = new Regex(@"([^\\]+)@");
 
         //компаратор нужен для того, чтобы в сортированный список можно было добавлять пары с одинаковыми ключами

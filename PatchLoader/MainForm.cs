@@ -81,7 +81,7 @@ namespace PatchLoader
                     currRow.Cells[2].Value = addToPatch;
                 }
             }
-            BtInstallToTest.Enabled = BtPush.Enabled = BtCreateFileSc.Enabled = BtEditFileSc.Enabled = true;
+            BtInstallToTestODH.Enabled = BtInstallToTest.Enabled = BtPush.Enabled = BtCreateFileSc.Enabled = BtEditFileSc.Enabled = true;
             ResizeForm();
         }
 
@@ -275,6 +275,7 @@ namespace PatchLoader
 
             BtPush.Top = ClientRectangle.Height - BtPush.Height - 8;
             BtInstallToTest.Top = ClientRectangle.Height - BtInstallToTest.Height - 8;
+            BtInstallToTestODH.Top = ClientRectangle.Height - BtInstallToTestODH.Height - 8;
             BtCreateFileSc.Top = ClientRectangle.Height - BtCreateFileSc.Height - 8;
             BtEditFileSc.Top = ClientRectangle.Height - BtEditFileSc.Height - 8;
 
@@ -357,12 +358,12 @@ namespace PatchLoader
             }
         }
 
-        private void BtInstallToTest_Click(object sender, EventArgs e)
+        private void InstallToTest(string installerPath)
         {
             if (Directory.Exists(TbPatchLocation.Text))
             {
                 string fileScPath = Path.Combine(TbPatchLocation.Text, "file_sc.txt");
-                FileInfo patchInstallerPath = new FileInfo(Properties.Settings.Default.PatchInstallerPath);
+                FileInfo patchInstallerPath = new FileInfo(installerPath);
                 string patchInstallerName = patchInstallerPath.Name;
                 string patchInstallerDir = patchInstallerPath.DirectoryName;
                 string drive = Path.GetPathRoot(patchInstallerPath.FullName).Replace("\\", "");
@@ -392,6 +393,11 @@ namespace PatchLoader
             {
                 MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void BtInstallToTest_Click(object sender, EventArgs e)
+        {
+            InstallToTest(Properties.Settings.Default.PatchInstallerPath);
         }
 
         private void BtCreateFileSc_Click(object sender, EventArgs e)
@@ -434,6 +440,17 @@ namespace PatchLoader
             {
                 MessageBox.Show("Папка с патчем не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void BtInstallToTestODH_Click(object sender, EventArgs e)
+        {
+            InstallToTest(Properties.Settings.Default.PatchInstallerODHPath);
+        }
+
+        private void TestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TestPatch tp = new TestPatch();
+            tp.ShowDialog();
         }
     }
 }

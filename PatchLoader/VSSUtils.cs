@@ -654,7 +654,7 @@ namespace PatchLoader
             }
         }
 
-        public void CreateLink(IVSSItem sourceItem, IVSSItem destDir)
+        private void CreateLink(IVSSItem sourceItem, IVSSItem destDir)
         {
             destDir.Share((VSSItem)sourceItem, destDir.Name, (int)VSSFlags.VSSFLAG_GETNO);
             sender($"Создана ссылка для файла {sourceItem.Spec} в {destDir.Spec}");
@@ -663,6 +663,109 @@ namespace PatchLoader
         public void Close()
         {
             VSSDB.Close();
+        }
+
+        private bool CompareItems(IVSSItem repItem, IVSSItem linkItem)
+        {
+            int maxVersion = 0;
+            int linkItemVersion = -1;
+
+            foreach (IVSSItem item in repItem.Links)
+            {
+                maxVersion = item.VersionNumber > maxVersion ? item.VersionNumber : maxVersion;
+                if (item.Spec.Equals(linkItem.Spec, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    linkItemVersion = item.VersionNumber;
+                }
+            }
+
+            if(linkItemVersion == maxVersion)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TestPatchDir(string remotePath, out List<string> versionMismatches)
+        {
+            sender($"Проверка патча {remotePath}");
+            IVSSItem patchStartDir = VSSDB.get_VSSItem(remotePath);
+            sender($"Патч {remotePath} найден");
+
+            IVSSItem startRepDir = VSSDB.get_VSSItem(Properties.Settings.Default.RemoteRoot);
+            sender($"Папка {Properties.Settings.Default.RemoteRoot} найдена");
+            versionMismatches = new List<string>();
+
+            bool res = true;
+
+            foreach (IVSSItem subpatchItem in patchStartDir.Items)
+            {
+                if ((VSSItemType)subpatchItem.Type == VSSItemType.VSSITEM_PROJECT)
+                {
+                    TestPatchDirRec(subpatchItem, startRepDir, ref res, versionMismatches);
+                }
+            }
+
+            return res;
+        }
+
+        private void TestPatchDirRec(IVSSItem patchCurrDir, IVSSItem repCurrDir, ref bool res, List<string> versionMismatches)
+        {
+            foreach (IVSSItem linkItem in patchCurrDir.Items)
+            {
+                if ((VSSItemType)linkItem.Type == VSSItemType.VSSITEM_PROJECT)
+                {
+                    try
+                    {
+                        sender($"Проверка папки {linkItem.Spec}");
+                        IVSSItem repNextDir = VSSDB.get_VSSItem($"{repCurrDir.Spec}/{linkItem.Name}");
+                        sender($"Папка {repNextDir.Spec} найдена");
+                        TestPatchDirRec(linkItem, repNextDir, ref res, versionMismatches);
+                    }
+                    catch (System.Runtime.InteropServices.COMException exc)
+                    {
+                        if (!IsFileNotFoundError(exc))
+                        {
+                            throw exc;
+                        }
+                        else
+                        {
+                            sender($"Папка {repCurrDir.Spec}/{linkItem.Name} не найдена");
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        IVSSItem repItem = VSSDB.get_VSSItem($"{repCurrDir.Spec}/{linkItem.Name}");
+                        sender($"Файл {repItem.Spec} найден");
+
+                        if (!CompareItems(repItem, linkItem))
+                        {
+                            res = false;
+                            versionMismatches.Add(linkItem.Spec);
+                            sender($"Разные версии у файлов {linkItem.Spec} и {repItem.Spec}");
+                        }
+                        else
+                        {
+                            sender($"Одинаковые версии у файлов {linkItem.Spec} и {repItem.Spec}");
+                        }
+                    }
+                    catch (System.Runtime.InteropServices.COMException exc)
+                    {
+                        if (!IsFileNotFoundError(exc))
+                        {
+                            throw exc;
+                        }
+                        else
+                        {
+                            sender($"Файл {repCurrDir.Spec}/{linkItem.Name} не найден");
+                        }
+                    }
+                }
+            }
         }
     }
 }

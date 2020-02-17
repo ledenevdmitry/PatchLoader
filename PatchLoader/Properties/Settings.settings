@@ -54,7 +54,7 @@ User-Defined Function
 Workflows</Value>
     </Setting>
     <Setting Name="PatchInstallerPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">X:\IPatch\patch_ins_pr_slesh\PI.exe</Value>
+      <Value Profile="(Default)">X:\Executable\patch_ins_pr_slesh\PI.exe</Value>
     </Setting>
     <Setting Name="SearchRoots" Type="System.String" Scope="User">
       <Value Profile="(Default)">$/Patches/Working STAB2
@@ -74,6 +74,12 @@ $/Patches/Production</Value>
     </Setting>
     <Setting Name="STWFFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)">flow_control@rep_dw_prod</Value>
+    </Setting>
+    <Setting Name="PatchInstallerODHPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">X:\Executable\patch_ins_pr_slesh_ODH\PI.exe</Value>
+    </Setting>
+    <Setting Name="ScenarioExclude" Type="System.String" Scope="User">
+      <Value Profile="(Default)">file_sc.*\.|RELEASE_NOTES\.|VSSVER2\.|\.xls|IVSS\.tmp|\\tablespace|\\user|not_in_scenario.txt</Value>
     </Setting>
   </Settings>
 </SettingsFile>

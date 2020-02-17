@@ -47,6 +47,8 @@
             this.BtRefreshList = new System.Windows.Forms.Button();
             this.BtCreateFileSc = new System.Windows.Forms.Button();
             this.BtEditFileSc = new System.Windows.Forms.Button();
+            this.BtInstallToTestODH = new System.Windows.Forms.Button();
+            this.TestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -56,7 +58,8 @@
             this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CreateToolStripMenuItem,
             this.SettingsToolStripMenuItem,
-            this.FindToolStripMenuItem});
+            this.FindToolStripMenuItem,
+            this.TestToolStripMenuItem});
             this.MainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MainMenuStrip.Name = "MainMenuStrip";
             this.MainMenuStrip.Size = new System.Drawing.Size(685, 24);
@@ -129,9 +132,9 @@
             // BtPush
             // 
             this.BtPush.Enabled = false;
-            this.BtPush.Location = new System.Drawing.Point(482, 307);
+            this.BtPush.Location = new System.Drawing.Point(519, 307);
             this.BtPush.Name = "BtPush";
-            this.BtPush.Size = new System.Drawing.Size(110, 23);
+            this.BtPush.Size = new System.Drawing.Size(154, 39);
             this.BtPush.TabIndex = 4;
             this.BtPush.Text = "Выложить";
             this.BtPush.UseVisualStyleBackColor = true;
@@ -184,11 +187,11 @@
             // BtInstallToTest
             // 
             this.BtInstallToTest.Enabled = false;
-            this.BtInstallToTest.Location = new System.Drawing.Point(366, 307);
+            this.BtInstallToTest.Location = new System.Drawing.Point(267, 307);
             this.BtInstallToTest.Name = "BtInstallToTest";
-            this.BtInstallToTest.Size = new System.Drawing.Size(110, 23);
+            this.BtInstallToTest.Size = new System.Drawing.Size(120, 39);
             this.BtInstallToTest.TabIndex = 8;
-            this.BtInstallToTest.Text = "Накатить на тест";
+            this.BtInstallToTest.Text = "Накатить на тест (патч Ядра)";
             this.BtInstallToTest.UseVisualStyleBackColor = true;
             this.BtInstallToTest.Click += new System.EventHandler(this.BtInstallToTest_Click);
             // 
@@ -207,7 +210,7 @@
             this.BtCreateFileSc.Enabled = false;
             this.BtCreateFileSc.Location = new System.Drawing.Point(15, 307);
             this.BtCreateFileSc.Name = "BtCreateFileSc";
-            this.BtCreateFileSc.Size = new System.Drawing.Size(142, 23);
+            this.BtCreateFileSc.Size = new System.Drawing.Size(120, 39);
             this.BtCreateFileSc.TabIndex = 10;
             this.BtCreateFileSc.Text = "Создать файл сценария";
             this.BtCreateFileSc.UseVisualStyleBackColor = true;
@@ -216,19 +219,38 @@
             // BtEditFileSc
             // 
             this.BtEditFileSc.Enabled = false;
-            this.BtEditFileSc.Location = new System.Drawing.Point(163, 307);
+            this.BtEditFileSc.Location = new System.Drawing.Point(141, 307);
             this.BtEditFileSc.Name = "BtEditFileSc";
-            this.BtEditFileSc.Size = new System.Drawing.Size(197, 23);
+            this.BtEditFileSc.Size = new System.Drawing.Size(120, 39);
             this.BtEditFileSc.TabIndex = 11;
             this.BtEditFileSc.Text = "Редактировать файл сценария";
             this.BtEditFileSc.UseVisualStyleBackColor = true;
             this.BtEditFileSc.Click += new System.EventHandler(this.BtEditFileSc_Click);
             // 
+            // BtInstallToTestODH
+            // 
+            this.BtInstallToTestODH.Enabled = false;
+            this.BtInstallToTestODH.Location = new System.Drawing.Point(393, 307);
+            this.BtInstallToTestODH.Name = "BtInstallToTestODH";
+            this.BtInstallToTestODH.Size = new System.Drawing.Size(120, 39);
+            this.BtInstallToTestODH.TabIndex = 12;
+            this.BtInstallToTestODH.Text = "Накатить на тест (патч ODH)";
+            this.BtInstallToTestODH.UseVisualStyleBackColor = true;
+            this.BtInstallToTestODH.Click += new System.EventHandler(this.BtInstallToTestODH_Click);
+            // 
+            // TestToolStripMenuItem
+            // 
+            this.TestToolStripMenuItem.Name = "TestToolStripMenuItem";
+            this.TestToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
+            this.TestToolStripMenuItem.Text = "Проверить";
+            this.TestToolStripMenuItem.Click += new System.EventHandler(this.TestToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(685, 342);
+            this.ClientSize = new System.Drawing.Size(685, 353);
+            this.Controls.Add(this.BtInstallToTestODH);
             this.Controls.Add(this.BtEditFileSc);
             this.Controls.Add(this.BtCreateFileSc);
             this.Controls.Add(this.BtRefreshList);
@@ -272,6 +294,8 @@
         private System.Windows.Forms.Button BtCreateFileSc;
         private System.Windows.Forms.ToolStripMenuItem FindToolStripMenuItem;
         private System.Windows.Forms.Button BtEditFileSc;
+        private System.Windows.Forms.Button BtInstallToTestODH;
+        private System.Windows.Forms.ToolStripMenuItem TestToolStripMenuItem;
     }
 }
 

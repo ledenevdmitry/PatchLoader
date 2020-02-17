@@ -64,6 +64,8 @@ namespace PatchLoader
                     MessageBox.Show("Файл не найден", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
+                lf.Invoke(new Action(() => lf.Close()));
+
                 EnableSearchButtons();
                 DisableStopButton();
             });

@@ -101,6 +101,12 @@
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TestPatch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestPatch.Designer.cs">
+      <DependentUpon>TestPatch.cs</DependentUpon>
+    </Compile>
     <Compile Include="VSSError.cs" />
     <Compile Include="VSSUtils.cs" />
     <EmbeddedResource Include="EditFileScForm.resx">
@@ -133,6 +139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPatch.resx">
+      <DependentUpon>TestPatch.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

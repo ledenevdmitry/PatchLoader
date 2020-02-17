@@ -28,9 +28,11 @@ namespace PatchLoader
             TbRepStructureScripts.Text = Properties.Settings.Default.RepStructureScripts;
             TbRepStructureInfa.Text = Properties.Settings.Default.RepStructureInfa;
             TbInstallerPath.Text = Properties.Settings.Default.PatchInstallerPath;
+            TbODHInstallerPath.Text = Properties.Settings.Default.PatchInstallerODHPath;
             TbSSPath.Text = Properties.Settings.Default.SSPath;
             TbCreateSTWFRegex.Text = Properties.Settings.Default.CreateSTWFRegex;
             TbSTWFFolder.Text = Properties.Settings.Default.STWFFolder;
+            TbScenarioExclude.Text = Properties.Settings.Default.ScenarioExclude;
         }
 
         private void BtSubmit_Click(object sender, EventArgs e)
@@ -49,9 +51,11 @@ namespace PatchLoader
             Properties.Settings.Default.RepStructureScripts = TbRepStructureScripts.Text;
             Properties.Settings.Default.RepStructureInfa = TbRepStructureInfa.Text;
             Properties.Settings.Default.PatchInstallerPath = TbInstallerPath.Text;
+            Properties.Settings.Default.PatchInstallerODHPath = TbODHInstallerPath.Text;
             Properties.Settings.Default.SSPath = TbSSPath.Text;
             Properties.Settings.Default.CreateSTWFRegex = TbCreateSTWFRegex.Text;
             Properties.Settings.Default.STWFFolder = TbSTWFFolder.Text;
+            Properties.Settings.Default.ScenarioExclude = TbScenarioExclude.Text;
 
             Properties.Settings.Default.Save();
 
