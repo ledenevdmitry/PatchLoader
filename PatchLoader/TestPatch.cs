@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -26,25 +27,37 @@ namespace PatchLoader
             VSSUtils.sender = lf.AddToLog;
             lf.Show();
 
-            Thread th = new Thread(() =>
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.Description = "Необходимо выбрать папку для хранения патчей";
+            fbd.SelectedPath = Properties.Settings.Default.PatchesLocalDir;
+
+            DirectoryInfo localDir;
+
+            if (fbd.ShowDialog() == DialogResult.OK)
             {
-                BtTest.Invoke(new Action(() => BtTest.Enabled = false));
+                localDir = new DirectoryInfo(fbd.SelectedPath);
+                Properties.Settings.Default.PatchesLocalDir = fbd.SelectedPath;
+                Properties.Settings.Default.Save();
 
-                foreach (string item in TbPatchList.Text.Split(new string[] { Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries))
+                Thread th = new Thread(() =>
                 {
-                    vss.TestPatchDir(item, out List<string> versionMismatches);
-                    lf.AddToLog("Проверка завершена!");
-                    foreach(string mismatch in versionMismatches)
+                    BtTest.Invoke(new Action(() => BtTest.Enabled = false));
+                    foreach (string item in TbPatchList.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        TbErrors.Invoke(new Action(() => TbErrors.AppendText($"Несоответствие версий для {mismatch}{Environment.NewLine}")));
+                        string dir = item.Split('/').Last();
+                        DirectoryInfo patchDir = Directory.CreateDirectory(Path.Combine(localDir.FullName, dir));
+                        vss.Pull(item, patchDir);
+
+                        vss.TestPatchDir(item, out string errDesc, patchDir);
+                        TbErrors.Invoke(new Action(() => TbErrors.AppendText(errDesc)));
+                        lf.AddToLog("Проверка завершена!");
                     }
-                }
 
-                BtTest.Invoke(new Action(() => BtTest.Enabled = true));
+                    BtTest.Invoke(new Action(() => BtTest.Enabled = true));
+                });
+                th.Start();
+            }
 
-            });
-
-            th.Start();
         }
 
         private void TestPatch_Resize(object sender, EventArgs e)

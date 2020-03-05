@@ -40,5 +40,11 @@ namespace PatchLoader
             DialogResult = DialogResult.Cancel;
             return;
         }
+
+        private void BtIgnore_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Ignore;
+            return;
+        }
     }
 }

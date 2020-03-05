@@ -34,6 +34,7 @@
             this.CreateInfaRepositoryDirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FindToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BtPatchLocation = new System.Windows.Forms.Button();
             this.LbPatchLocation = new System.Windows.Forms.Label();
             this.TbPatchLocation = new System.Windows.Forms.TextBox();
@@ -48,7 +49,7 @@
             this.BtCreateFileSc = new System.Windows.Forms.Button();
             this.BtEditFileSc = new System.Windows.Forms.Button();
             this.BtInstallToTestODH = new System.Windows.Forms.Button();
-            this.TestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TestLocalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFileList)).BeginInit();
             this.SuspendLayout();
@@ -59,7 +60,8 @@
             this.CreateToolStripMenuItem,
             this.SettingsToolStripMenuItem,
             this.FindToolStripMenuItem,
-            this.TestToolStripMenuItem});
+            this.TestToolStripMenuItem,
+            this.TestLocalToolStripMenuItem});
             this.MainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MainMenuStrip.Name = "MainMenuStrip";
             this.MainMenuStrip.Size = new System.Drawing.Size(685, 24);
@@ -102,6 +104,13 @@
             this.FindToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.FindToolStripMenuItem.Text = "Найти";
             this.FindToolStripMenuItem.Click += new System.EventHandler(this.FindToolStripMenuItem_Click);
+            // 
+            // TestToolStripMenuItem
+            // 
+            this.TestToolStripMenuItem.Name = "TestToolStripMenuItem";
+            this.TestToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
+            this.TestToolStripMenuItem.Text = "Проверить";
+            this.TestToolStripMenuItem.Click += new System.EventHandler(this.TestToolStripMenuItem_Click);
             // 
             // BtPatchLocation
             // 
@@ -238,12 +247,12 @@
             this.BtInstallToTestODH.UseVisualStyleBackColor = true;
             this.BtInstallToTestODH.Click += new System.EventHandler(this.BtInstallToTestODH_Click);
             // 
-            // TestToolStripMenuItem
+            // TestLocalToolStripMenuItem
             // 
-            this.TestToolStripMenuItem.Name = "TestToolStripMenuItem";
-            this.TestToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
-            this.TestToolStripMenuItem.Text = "Проверить";
-            this.TestToolStripMenuItem.Click += new System.EventHandler(this.TestToolStripMenuItem_Click);
+            this.TestLocalToolStripMenuItem.Name = "TestLocalToolStripMenuItem";
+            this.TestLocalToolStripMenuItem.Size = new System.Drawing.Size(135, 20);
+            this.TestLocalToolStripMenuItem.Text = "Проверить локально";
+            this.TestLocalToolStripMenuItem.Click += new System.EventHandler(this.TestLocalToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -296,6 +305,7 @@
         private System.Windows.Forms.Button BtEditFileSc;
         private System.Windows.Forms.Button BtInstallToTestODH;
         private System.Windows.Forms.ToolStripMenuItem TestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TestLocalToolStripMenuItem;
     }
 }
 

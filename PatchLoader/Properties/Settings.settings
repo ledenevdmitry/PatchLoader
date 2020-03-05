@@ -38,7 +38,8 @@ Procedure
 Table
 Tablespace
 User
-View</Value>
+View
+Package</Value>
     </Setting>
     <Setting Name="RepStructureInfa" Type="System.String" Scope="User">
       <Value Profile="(Default)">Configs
@@ -80,6 +81,9 @@ $/Patches/Production</Value>
     </Setting>
     <Setting Name="ScenarioExclude" Type="System.String" Scope="User">
       <Value Profile="(Default)">file_sc.*\.|RELEASE_NOTES\.|VSSVER2\.|\.xls|IVSS\.tmp|\\tablespace|\\user|not_in_scenario.txt</Value>
+    </Setting>
+    <Setting Name="PatchesLocalDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

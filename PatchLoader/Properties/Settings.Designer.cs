@@ -145,7 +145,7 @@ namespace PatchLoader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Index\r\nProcedure\r\nTable\r\nTablespace\r\nUser\r\nView")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Index\r\nProcedure\r\nTable\r\nTablespace\r\nUser\r\nView\r\nPackage")]
         public string RepStructureScripts {
             get {
                 return ((string)(this["RepStructureScripts"]));
@@ -252,6 +252,18 @@ namespace PatchLoader.Properties {
             }
             set {
                 this["ScenarioExclude"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PatchesLocalDir {
+            get {
+                return ((string)(this["PatchesLocalDir"]));
+            }
+            set {
+                this["PatchesLocalDir"] = value;
             }
         }
     }

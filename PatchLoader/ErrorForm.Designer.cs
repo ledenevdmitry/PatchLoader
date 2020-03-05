@@ -33,6 +33,7 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.BtRetry = new System.Windows.Forms.Button();
             this.BtCancel = new System.Windows.Forms.Button();
+            this.BtIgnore = new System.Windows.Forms.Button();
             this.GbMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,7 +58,7 @@
             // 
             // BtRetry
             // 
-            this.BtRetry.Location = new System.Drawing.Point(11, 401);
+            this.BtRetry.Location = new System.Drawing.Point(123, 401);
             this.BtRetry.Name = "BtRetry";
             this.BtRetry.Size = new System.Drawing.Size(105, 37);
             this.BtRetry.TabIndex = 1;
@@ -67,7 +68,7 @@
             // 
             // BtCancel
             // 
-            this.BtCancel.Location = new System.Drawing.Point(122, 401);
+            this.BtCancel.Location = new System.Drawing.Point(12, 401);
             this.BtCancel.Name = "BtCancel";
             this.BtCancel.Size = new System.Drawing.Size(105, 37);
             this.BtCancel.TabIndex = 2;
@@ -75,11 +76,22 @@
             this.BtCancel.UseVisualStyleBackColor = true;
             this.BtCancel.Click += new System.EventHandler(this.BtCancel_Click);
             // 
+            // BtIgnore
+            // 
+            this.BtIgnore.Location = new System.Drawing.Point(234, 401);
+            this.BtIgnore.Name = "BtIgnore";
+            this.BtIgnore.Size = new System.Drawing.Size(105, 37);
+            this.BtIgnore.TabIndex = 3;
+            this.BtIgnore.Text = "Игнорировать";
+            this.BtIgnore.UseVisualStyleBackColor = true;
+            this.BtIgnore.Click += new System.EventHandler(this.BtIgnore_Click);
+            // 
             // ErrorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BtIgnore);
             this.Controls.Add(this.BtCancel);
             this.Controls.Add(this.BtRetry);
             this.Controls.Add(this.GbMain);
@@ -99,5 +111,6 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button BtRetry;
         private System.Windows.Forms.Button BtCancel;
+        private System.Windows.Forms.Button BtIgnore;
     }
 }

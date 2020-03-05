@@ -154,13 +154,15 @@ namespace PatchLoader
             if (errLog != "")
             {
                 ErrorForm ef = new ErrorForm("Ошибки при проверке", errLog);
-                if (ef.ShowDialog() == DialogResult.Retry)
+                switch(ef.ShowDialog())
                 {
-                    res = CheckPatch(patchDir, patchFiles);
-                }
-                else
-                {
-                    return false;
+                    case DialogResult.Retry:
+                        res = CheckPatch(patchDir, patchFiles);
+                        break;
+                    case DialogResult.Ignore:
+                        return true;
+                    case DialogResult.Cancel:
+                        return false;
                 }
             }
             return res;
@@ -451,6 +453,45 @@ namespace PatchLoader
         {
             TestPatch tp = new TestPatch();
             tp.ShowDialog();
+        }
+
+        private void TestLocal()
+        {
+            LogForm lf = new LogForm();
+            VSSUtils.sender = lf.AddToLog;
+            lf.Show();
+
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.Description = "Необходимо выбрать патч для проверки";
+
+            DirectoryInfo localDir;
+
+            bool retry = false;
+
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                localDir = new DirectoryInfo(fbd.SelectedPath);
+
+                Thread th = new Thread(() =>
+                {
+                    string errDesc = "";
+                    if (!VSSUtils.CheckPatchErrors(localDir, ref errDesc))
+                    {
+                        ErrorForm ef = new ErrorForm($"Ошибки в патче {localDir.Name}", errDesc);
+                        if (ef.ShowDialog() == DialogResult.Retry)
+                        {
+                            retry = true;
+                        }
+                    }
+                    lf.AddToLog("Проверка завершена!");
+                });
+                th.Start();
+            }
+        }
+
+        private void TestLocalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TestLocal();
         }
     }
 }

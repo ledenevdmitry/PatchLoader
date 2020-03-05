@@ -47,7 +47,7 @@ namespace PatchLoader
 
                 foreach (string root in roots)
                 {
-                    if(vss.FirstInEntireBase(root, TbFileName.Text, (int)NudDepth.Value, out string match))
+                    if(vss.FirstInEntireBase(root, TbFileName.Text, (int)NudDepth.Value, true, out string match))
                     {
                         TbResult.Invoke(new Action(() => TbResult.AppendText(match)));
                         found = true;
@@ -123,7 +123,7 @@ namespace PatchLoader
                 {
                     try
                     {
-                        foreach (string res in vss.AllInEntireBase(root, TbFileName.Text, (int)NudDepth.Value))
+                        foreach (string res in vss.AllInEntireBase(root, TbFileName.Text, true, (int)NudDepth.Value))
                         {
                             TbResult.Invoke(new Action(() => TbResult.AppendText(res + Environment.NewLine)));
                         }

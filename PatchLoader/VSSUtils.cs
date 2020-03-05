@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PatchLoader
 {
@@ -81,7 +82,7 @@ namespace PatchLoader
 
         public bool stopSearch;
 
-        public IEnumerable<string> AllInEntireBase(string root, string name, int depth)
+        public IEnumerable<string> AllInEntireBase(string root, string name, bool matchPart, int depth)
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
@@ -92,7 +93,9 @@ namespace PatchLoader
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if (currItem.Item1.Name.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1)
+                if (matchPart && currItem.Item1.Name.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1
+                    ||
+                    currItem.Item1.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     yield return currItem.Item1.Spec;
@@ -118,7 +121,7 @@ namespace PatchLoader
             }
         }
 
-        public bool FirstInEntireBase(string root, string name, int depth, out string match)
+        public bool FirstInEntireBase(string root, string name, int depth, bool matchPart, out string match)
         {
             Queue<Tuple<VSSItem, int>> queue = new Queue<Tuple<VSSItem, int>>();
             queue.Enqueue(new Tuple<VSSItem, int>(VSSDB.get_VSSItem(root, false), 0));
@@ -126,7 +129,9 @@ namespace PatchLoader
             {
                 Tuple<VSSItem, int> currItem = queue.Dequeue();
 
-                if (currItem.Item1.Name.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1)
+                if (matchPart && currItem.Item1.Name.IndexOf(name, StringComparison.InvariantCultureIgnoreCase) != -1
+                    ||
+                    currItem.Item1.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     sender($"Найден файл {currItem.Item1.Spec} ...");
                     match = currItem.Item1.Spec;
@@ -257,12 +262,15 @@ namespace PatchLoader
             try
             {
                 VSSItem dir = VSSDB.get_VSSItem(vssPath, false);
+                sender($"Папка {vssPath} найдена");
                 if (!localPath.Exists)
                 {
                     localPath.Create();
+                    sender($"Папка {vssPath} найдена");
                 }
-                dir.Get(localPath.FullName, (int)(VSSFlags.VSSFLAG_RECURSYES | VSSFlags.VSSFLAG_REPREPLACE));
-                DeleteLocalIfNotExistsInVSS(dir, localPath);
+                dir.Get(localPath.FullName, (int)(VSSFlags.VSSFLAG_RECURSYES/* | VSSFlags.VSSFLAG_REPREPLACE*/));
+                //DeleteLocalIfNotExistsInVSS(dir, localPath);
+                sender("Папка загружена!");
             }
             catch (System.Runtime.InteropServices.COMException exc)
             {
@@ -380,15 +388,37 @@ namespace PatchLoader
                 item = VSSDB.get_VSSItem(vssPath, false);
 
                 item.Checkin("", localPath);
-                sender($"{item.Spec} checked in");
-                try
+                if(item.IsCheckedOut == 0)
                 {
-                    Pin(item, item.VersionNumber);
-                    sender($"{item.Spec} pinned");
+                    sender($"{item.Spec} checked in");
+                    try
+                    {
+                        Pin(item, item.VersionNumber);
+                        sender($"{item.Spec} pinned");
+                    }
+                    catch
+                    {
+                        sender($"Cannot pin {item.Spec}");
+                    }
                 }
-                catch
+                else
                 {
-                    sender($"Cannot pin {item.Spec}");
+                    Process pr = new Process();
+                    pr.StartInfo.FileName = "cmd.exe";
+                    pr.StartInfo.UseShellExecute = false;
+                    pr.StartInfo.RedirectStandardOutput = true;
+                    pr.StartInfo.RedirectStandardInput = true;
+                    pr.StartInfo.CreateNoWindow = true;
+                    pr.Start();
+
+                    string drive = Path.GetPathRoot(localDir).Replace("\\", "");
+                    pr.StandardInput.WriteLine(drive);
+                    pr.StandardInput.WriteLine($"set SSDIR={basePath}");
+                    pr.StandardInput.WriteLine($"\"{SSExeFullName}\" checkin \"{item.Spec}\"");
+                    pr.StandardInput.WriteLine($"\"{SSExeFullName}\" pin \"{item.Spec}\" -V{item.VersionNumber}");
+
+                    sender($"{item.Spec} checked in and pinned via cmd");
+                    MessageBox.Show($"Костыль. Запинили с помощью консоли файл {item.Spec}. Требуется проверить вручную.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
             }
@@ -462,12 +492,80 @@ namespace PatchLoader
             return true;
         }
 
+        public static bool CheckPatchErrors(DirectoryInfo localDir, ref string errDesc)
+        {
+            bool res = true;
+            foreach(DirectoryInfo dir in localDir.EnumerateDirectories("*", SearchOption.AllDirectories))
+            {
+                if(dir.Name.Equals("TABLE", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    foreach(FileInfo file in dir.EnumerateFiles("*.*", SearchOption.AllDirectories))
+                    {
+                        sender($"Проверка файла {file.FullName} на insert-ы");
+                        using (StreamReader sr = new StreamReader(file.FullName, Encoding.GetEncoding("Windows-1251")))
+                        {
+                            string fileText = sr.ReadToEnd();
+                            if(fileText.IndexOf("insert into", StringComparison.InvariantCultureIgnoreCase) != -1)
+                            {
+                                errDesc += $"В файле {file.FullName} в папке Table идет insert" + Environment.NewLine;
+                                res = false;
+                            }
+                        }
+                    }
+                }
+                else if (dir.Name.Equals("OP_USER@BI2DB5", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    foreach (FileInfo file in dir.EnumerateFiles("*.*", SearchOption.AllDirectories))
+                    {
+                        using (StreamReader sr = new StreamReader(file.FullName, Encoding.GetEncoding("Windows-1251")))
+                        {
+                            string fileText = sr.ReadToEnd().Replace(Environment.NewLine, "");
+                            string [] words = Regex.Split(fileText, "\\s+");
+                            for(int i = 0; i < words.Length; ++i)
+                            {
+                                if(words[i].Equals("CREATE", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    sender($"Проверка {file.FullName} CREATE на TABLESPACE TRASH");
+                                    int j = i + 1;
+                                    while(!words[j].Equals(";",  StringComparison.InvariantCultureIgnoreCase) &&
+                                          !words[j].Equals("AS", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        ++j;
+                                    }
+
+                                    bool TSFound = false;
+
+                                    for(int k = i; k < j; ++k)
+                                    {
+                                        if(words[i].Equals("TABLESPACE", StringComparison.InvariantCultureIgnoreCase) &&
+                                           words[i + 1].Equals("TRASH", StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            TSFound = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!TSFound)
+                                    {
+                                        errDesc += $"В файле {file.FullName} в схеме для CREATE не найден TABLESPACE TRASH" + Environment.NewLine;
+                                        res = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+
         public string CheckDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath)
         {
             VSSItem remoteDir = VSSDB.get_VSSItem(remotePath);
             string res = "";
 
             CheckDirRec(localDir, patchFiles, remoteDir, ref res);
+            CheckPatchErrors(localDir, ref res);
 
             return res;
         }
@@ -685,27 +783,67 @@ namespace PatchLoader
             }
 
             return false;
-        }
+        }       
 
-        public bool TestPatchDir(string remotePath, out List<string> versionMismatches)
+        public bool TestPatchDir(string remotePath, out string errDesc, DirectoryInfo localDir)
         {
             sender($"Проверка патча {remotePath}");
             IVSSItem patchStartDir = VSSDB.get_VSSItem(remotePath);
             sender($"Патч {remotePath} найден");
 
-            IVSSItem startRepDir = VSSDB.get_VSSItem(Properties.Settings.Default.RemoteRoot);
+            string startRepPath = Properties.Settings.Default.RemoteRoot;
             sender($"Папка {Properties.Settings.Default.RemoteRoot} найдена");
-            versionMismatches = new List<string>();
+            List<string> versionMismatches = new List<string>();
 
             bool res = true;
+            errDesc = "";
 
-            foreach (IVSSItem subpatchItem in patchStartDir.Items)
+            string scriptsSubdir = Properties.Settings.Default.ScriptsSubdir;
+            string infaSubdir = Properties.Settings.Default.InfaSubdir;
+
+            List<IVSSItem> startItemsScripts = new List<IVSSItem>();
+            List<IVSSItem> startItemsInfa = new List<IVSSItem>();
+
+            sender($"Находим папку {startRepPath}/{scriptsSubdir}");
+            IVSSItem scriptsRepDir = VSSDB.get_VSSItem($"{startRepPath}/{scriptsSubdir}");
+
+            sender($"Находим папку {startRepPath}/{infaSubdir}");
+            IVSSItem infaRepDir = VSSDB.get_VSSItem($"{startRepPath}/{infaSubdir}");
+
+            foreach (string itemSpec in AllInEntireBase(patchStartDir.Spec, scriptsSubdir, false, -1))
+            {
+                sender($"Нашли папку со скриптами в патче {itemSpec}");
+                startItemsScripts.Add(VSSDB.get_VSSItem(itemSpec));
+            }
+
+            foreach (string itemSpec in AllInEntireBase(patchStartDir.Spec, infaSubdir, false, -1))
+            {
+                sender($"Нашли папку информатики в патче {itemSpec}");
+                startItemsInfa.Add(VSSDB.get_VSSItem(itemSpec));
+            }
+
+            foreach (IVSSItem subpatchItem in startItemsScripts)
             {
                 if ((VSSItemType)subpatchItem.Type == VSSItemType.VSSITEM_PROJECT)
                 {
-                    TestPatchDirRec(subpatchItem, startRepDir, ref res, versionMismatches);
+                    TestPatchDirRec(subpatchItem, scriptsRepDir, ref res, versionMismatches);
                 }
             }
+
+            foreach (IVSSItem subpatchItem in startItemsInfa)
+            {
+                if ((VSSItemType)subpatchItem.Type == VSSItemType.VSSITEM_PROJECT)
+                {
+                    TestPatchDirRec(subpatchItem, infaRepDir, ref res, versionMismatches);
+                }
+            }
+
+            foreach (string file in versionMismatches)
+            {
+                errDesc += "Несоответствие версий в файле " + file + Environment.NewLine;
+            }
+            
+            res &= CheckPatchErrors(localDir, ref errDesc);
 
             return res;
         }
