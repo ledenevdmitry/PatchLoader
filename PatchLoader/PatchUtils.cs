@@ -112,19 +112,22 @@ namespace PatchLoader
 
             foreach (FileInfo fileInfo in patchDirectory.EnumerateFiles("*.xml", SearchOption.AllDirectories))
             {
-                if(fileInfo.Directory.Name.Equals(Properties.Settings.Default.STWFFolder, StringComparison.InvariantCultureIgnoreCase) || 
-                   fileInfo.Directory.Parent != null && fileInfo.Directory.Parent.Name.Equals(Properties.Settings.Default.STWFFolder, StringComparison.InvariantCultureIgnoreCase) && fileInfo.Directory.Name.Equals("WORKFLOWS", StringComparison.InvariantCultureIgnoreCase))
+                if (!fileInfo.Attributes.HasFlag(FileAttributes.Hidden))
                 {
-                    if (Regex.IsMatch(fileInfo.Name, Properties.Settings.Default.CreateSTWFRegex))
+                    if (fileInfo.Directory.Name.Equals(Properties.Settings.Default.STWFFolder, StringComparison.InvariantCultureIgnoreCase) ||
+                   fileInfo.Directory.Parent != null && fileInfo.Directory.Parent.Name.Equals(Properties.Settings.Default.STWFFolder, StringComparison.InvariantCultureIgnoreCase) && fileInfo.Directory.Name.Equals("WORKFLOWS", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        Directory.CreateDirectory(startWFDir);
-
-                        string wfName = Path.GetFileNameWithoutExtension(fileInfo.FullName);
-                        string startWFFile = Path.Combine(startWFDir, $"start_{wfName}.txt");
-                        using (File.Create(startWFFile)) { }
-                        using (StreamWriter tw = new StreamWriter(startWFFile, false, Encoding.GetEncoding("Windows-1251")))
+                        if (Regex.IsMatch(fileInfo.Name, Properties.Settings.Default.CreateSTWFRegex))
                         {
-                            tw.Write($" -f FLOW_CONTROL -wait {wfName}");
+                            Directory.CreateDirectory(startWFDir);
+
+                            string wfName = Path.GetFileNameWithoutExtension(fileInfo.FullName);
+                            string startWFFile = Path.Combine(startWFDir, $"start_{wfName}.txt");
+                            using (File.Create(startWFFile)) { }
+                            using (StreamWriter tw = new StreamWriter(startWFFile, false, Encoding.GetEncoding("Windows-1251")))
+                            {
+                                tw.Write($" -f FLOW_CONTROL -wait {wfName}");
+                            }
                         }
                     }
                 }
@@ -132,12 +135,15 @@ namespace PatchLoader
 
             foreach (FileInfo fileInfo in patchDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories))
             {
-                string fromFPPath = fileInfo.FullName.Substring(patchDirectory.FullName.Length + 1);
-                if (!WrongFiles.IsMatch(fromFPPath))
+                if (!fileInfo.Attributes.HasFlag(FileAttributes.Hidden))
                 {
-                    if (CreateScenarioLineByFromFPDirPath(fromFPPath, out string scenarioLine))
+                    string fromFPPath = fileInfo.FullName.Substring(patchDirectory.FullName.Length + 1);
+                    if (!WrongFiles.IsMatch(fromFPPath))
                     {
-                        priorityLinePair.Add(new ScenarioKey(Priority(scenarioLine), scenarioLine), scenarioLine);
+                        if (CreateScenarioLineByFromFPDirPath(fromFPPath, out string scenarioLine))
+                        {
+                            priorityLinePair.Add(new ScenarioKey(Priority(scenarioLine), scenarioLine), scenarioLine);
+                        }
                     }
                 }
             }

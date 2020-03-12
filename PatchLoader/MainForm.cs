@@ -47,38 +47,41 @@ namespace PatchLoader
             int i = 0;
             foreach (FileInfo fileInfo in patchDir.EnumerateFiles("*", SearchOption.AllDirectories))
             {
-                if (!fileInfo.Name.Equals("vssver2.scc", StringComparison.InvariantCultureIgnoreCase))
+                if (!fileInfo.Attributes.HasFlag(FileAttributes.Hidden))
                 {
-                    DgvFileList.Rows.Add();
-                    DataGridViewRow currRow = DgvFileList.Rows[i++];
-                    string fromSelectedPath = fileInfo.FullName.Substring(patchDir.FullName.Length + 1);
-
-                    string schema = "";
-                    bool schemaFound = false;
-
-                    if (fromSelectedPath.Count(x => x == '\\') > 1)
+                    if (!fileInfo.Name.Equals("vssver2.scc", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        int schemaStart = fromSelectedPath.IndexOf('\\');
-                        int schemaEnd = fromSelectedPath.IndexOf('\\', schemaStart + 1);
+                        DgvFileList.Rows.Add();
+                        DataGridViewRow currRow = DgvFileList.Rows[i++];
+                        string fromSelectedPath = fileInfo.FullName.Substring(patchDir.FullName.Length + 1);
 
-                        schema = fromSelectedPath.Substring(schemaStart + 1, schemaEnd - schemaStart - 1);
-                        schemaFound = true;
+                        string schema = "";
+                        bool schemaFound = false;
+
+                        if (fromSelectedPath.Count(x => x == '\\') > 1)
+                        {
+                            int schemaStart = fromSelectedPath.IndexOf('\\');
+                            int schemaEnd = fromSelectedPath.IndexOf('\\', schemaStart + 1);
+
+                            schema = fromSelectedPath.Substring(schemaStart + 1, schemaEnd - schemaStart - 1);
+                            schemaFound = true;
+                        }
+
+                        currRow.Cells[0].Value = fromSelectedPath;
+
+                        bool addToPatch = addToPatchRegex.IsMatch(fileInfo.Name) && !notAddToPatchRegex.IsMatch(fileInfo.Name);
+                        bool addToRep =
+                            schemaFound &&
+                            addToRepRegex.IsMatch(fromSelectedPath) &&
+                            !notAddToRepRegex.IsMatch(fromSelectedPath) &&
+                            //папка со скриптами, и подпапка есть в списке допустимых
+                            (PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.ScriptsSubdir, schema, patchDir, Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList())
+                             ||
+                             PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.InfaSubdir, schema, patchDir, Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()));
+
+                        currRow.Cells[1].Value = addToPatch && addToRep;
+                        currRow.Cells[2].Value = addToPatch;
                     }
-
-                    currRow.Cells[0].Value = fromSelectedPath;
-
-                    bool addToPatch = addToPatchRegex.IsMatch(fileInfo.Name) && !notAddToPatchRegex.IsMatch(fileInfo.Name);
-                    bool addToRep =
-                        schemaFound &&
-                        addToRepRegex.IsMatch(fromSelectedPath) &&
-                        !notAddToRepRegex.IsMatch(fromSelectedPath) &&
-                        //папка со скриптами, и подпапка есть в списке допустимых
-                        (PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.ScriptsSubdir, schema, patchDir, Properties.Settings.Default.RepStructureScripts.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList())
-                         ||
-                         PatchUtils.IsAcceptableDir(fileInfo.Directory, Properties.Settings.Default.InfaSubdir, schema, patchDir, Properties.Settings.Default.RepStructureInfa.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList()));
-
-                    currRow.Cells[1].Value = addToPatch && addToRep;
-                    currRow.Cells[2].Value = addToPatch;
                 }
             }
             BtInstallToTestODH.Enabled = BtInstallToTest.Enabled = BtPush.Enabled = BtCreateFileSc.Enabled = BtEditFileSc.Enabled = true;

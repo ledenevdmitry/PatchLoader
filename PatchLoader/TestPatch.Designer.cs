@@ -29,11 +29,12 @@
         private void InitializeComponent()
         {
             this.GbPatchList = new System.Windows.Forms.GroupBox();
+            this.TbPatchList = new System.Windows.Forms.TextBox();
             this.BtTest = new System.Windows.Forms.Button();
             this.GbErrors = new System.Windows.Forms.GroupBox();
-            this.TbPatchList = new System.Windows.Forms.TextBox();
             this.TbErrors = new System.Windows.Forms.TextBox();
             this.ScMain = new System.Windows.Forms.SplitContainer();
+            this.BtGetList = new System.Windows.Forms.Button();
             this.GbPatchList.SuspendLayout();
             this.GbErrors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScMain)).BeginInit();
@@ -51,7 +52,16 @@
             this.GbPatchList.Size = new System.Drawing.Size(190, 197);
             this.GbPatchList.TabIndex = 1;
             this.GbPatchList.TabStop = false;
-            this.GbPatchList.Text = "Список патчей";
+            this.GbPatchList.Text = "Список патчей (полное имя VSS)";
+            // 
+            // TbPatchList
+            // 
+            this.TbPatchList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TbPatchList.Location = new System.Drawing.Point(3, 16);
+            this.TbPatchList.Multiline = true;
+            this.TbPatchList.Name = "TbPatchList";
+            this.TbPatchList.Size = new System.Drawing.Size(184, 178);
+            this.TbPatchList.TabIndex = 0;
             // 
             // BtTest
             // 
@@ -73,15 +83,6 @@
             this.GbErrors.TabIndex = 3;
             this.GbErrors.TabStop = false;
             this.GbErrors.Text = "Ошибки:";
-            // 
-            // TbPatchList
-            // 
-            this.TbPatchList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TbPatchList.Location = new System.Drawing.Point(3, 16);
-            this.TbPatchList.Multiline = true;
-            this.TbPatchList.Name = "TbPatchList";
-            this.TbPatchList.Size = new System.Drawing.Size(184, 178);
-            this.TbPatchList.TabIndex = 0;
             // 
             // TbErrors
             // 
@@ -108,15 +109,26 @@
             this.ScMain.SplitterDistance = 190;
             this.ScMain.TabIndex = 4;
             // 
+            // BtGetList
+            // 
+            this.BtGetList.Location = new System.Drawing.Point(138, 210);
+            this.BtGetList.Name = "BtGetList";
+            this.BtGetList.Size = new System.Drawing.Size(120, 34);
+            this.BtGetList.TabIndex = 5;
+            this.BtGetList.Text = "Получить список патчей из папки";
+            this.BtGetList.UseVisualStyleBackColor = true;
+            this.BtGetList.Click += new System.EventHandler(this.BtGetList_Click);
+            // 
             // TestPatch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(599, 256);
+            this.Controls.Add(this.BtGetList);
             this.Controls.Add(this.ScMain);
             this.Controls.Add(this.BtTest);
             this.Name = "TestPatch";
-            this.Text = "TestPatch";
+            this.Text = "Проверка патчей";
             this.Resize += new System.EventHandler(this.TestPatch_Resize);
             this.GbPatchList.ResumeLayout(false);
             this.GbPatchList.PerformLayout();
@@ -137,5 +149,6 @@
         private System.Windows.Forms.TextBox TbPatchList;
         private System.Windows.Forms.TextBox TbErrors;
         private System.Windows.Forms.SplitContainer ScMain;
+        private System.Windows.Forms.Button BtGetList;
     }
 }

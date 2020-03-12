@@ -66,6 +66,24 @@ namespace PatchLoader
             ScMain.Height = ClientRectangle.Height - 8 * 3 - BtTest.Height;
 
             BtTest.Top = ScMain.Bottom + 8;
+            BtGetList.Top = ScMain.Bottom + 8;
+        }
+
+        private void BtGetList_Click(object sender, EventArgs e)
+        {
+            EnterValueForm evf = new EnterValueForm("Папка с патчами");
+            if(evf.ShowDialog() == DialogResult.OK)
+            {
+                string dir = evf.Value;
+
+                VSSUtils vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
+                List<string> subdirs = vss.GetSubdirs(dir);
+
+                foreach(string subdir in subdirs)
+                {
+                    TbPatchList.AppendText(subdir + Environment.NewLine);
+                }
+            }
         }
     }
 }
