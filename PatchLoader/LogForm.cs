@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,10 @@ namespace PatchLoader
         public LogForm()
         {
             InitializeComponent();
+            if (File.Exists("log.txt"))
+            {
+                File.Delete("log.txt");
+            }
         }        
 
         public void AddToLog(string entry)
@@ -24,6 +29,12 @@ namespace PatchLoader
                 TbMain.Invoke(new Action(() => TbMain.AppendText(entry + Environment.NewLine)));
             }
             catch { }
+                       
+
+            using (var sw = File.AppendText("log.txt"))
+            {
+                sw.WriteLine(entry);
+            }
         }
     }
 }

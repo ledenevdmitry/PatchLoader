@@ -825,7 +825,7 @@ namespace PatchLoader
             VSSDB.Close();
         }
 
-        private bool CompareItems(IVSSItem repItem, IVSSItem linkItem, out IVSSItem lastItem)
+        private bool CompareItems(IVSSItem repItem, IVSSItem linkItem, string linkItemLocal, out IVSSItem lastItem)
         {
             int maxVersion = -1;
             int linkItemVersion = -1;
@@ -847,6 +847,12 @@ namespace PatchLoader
 
             if (linkItemVersion == maxVersion)
             {
+                return true;
+            }
+
+            if(!repItem.IsDifferent[linkItemLocal])
+            {
+                sender($"Файлы {repItem.Spec} и {linkItem.Spec} идентичны");
                 return true;
             }
 
@@ -902,17 +908,31 @@ namespace PatchLoader
 
             foreach (IVSSItem subpatchItem in startItemsScripts)
             {
+                int patchIndex = subpatchItem.Spec.IndexOf(localDir.Name, StringComparison.InvariantCultureIgnoreCase) + localDir.Name.Length;
+                string subPath = subpatchItem.Spec.Substring(patchIndex).Replace('/', '\\');
+
+                string currLocalDir = localDir.FullName + subPath;
+
+                sender($"Локальная папка {currLocalDir} (Путь: {localDir.FullName}, подпуть: {subPath})");
+
                 if ((VSSItemType)subpatchItem.Type == VSSItemType.VSSITEM_PROJECT)
                 {
-                    TestPatchDirRec(subpatchItem, scriptsRepDir, ref res, ref errDesc);
+                    TestPatchDirRec(subpatchItem, currLocalDir, scriptsRepDir, ref res, ref errDesc);
                 }
             }
 
             foreach (IVSSItem subpatchItem in startItemsInfa)
             {
+                int patchIndex = subpatchItem.Spec.IndexOf(localDir.Name, StringComparison.InvariantCultureIgnoreCase) + localDir.Name.Length;
+                string subPath = subpatchItem.Spec.Substring(patchIndex).Replace('/', '\\');
+
+                string currLocalDir = localDir.FullName + subPath;
+
+                sender($"Локальная папка {currLocalDir} (Путь: {localDir.FullName}, подпуть: {subPath})");
+
                 if ((VSSItemType)subpatchItem.Type == VSSItemType.VSSITEM_PROJECT)
                 {
-                    TestPatchDirRec(subpatchItem, infaRepDir, ref res, ref errDesc);
+                    TestPatchDirRec(subpatchItem, currLocalDir, infaRepDir, ref res, ref errDesc);
                 }
             }
 
@@ -926,7 +946,7 @@ namespace PatchLoader
             return res;
         }
 
-        private void TestPatchDirRec(IVSSItem patchCurrDir, IVSSItem repCurrDir, ref bool res, ref string errDesc)
+        private void TestPatchDirRec(IVSSItem patchCurrDir, string localPath, IVSSItem repCurrDir, ref bool res, ref string errDesc)
         {
             foreach (IVSSItem linkItem in patchCurrDir.Items)
             {
@@ -936,8 +956,9 @@ namespace PatchLoader
                     {
                         sender($"Проверка папки {linkItem.Spec}");
                         IVSSItem repNextDir = VSSDB.get_VSSItem($"{repCurrDir.Spec}/{linkItem.Name}");
+                        string localNextDir = Path.Combine(localPath, linkItem.Name);
                         sender($"Папка {repNextDir.Spec} найдена");
-                        TestPatchDirRec(linkItem, repNextDir, ref res, ref errDesc);
+                        TestPatchDirRec(linkItem, localNextDir, repNextDir, ref res, ref errDesc);
                     }
                     catch (System.Runtime.InteropServices.COMException exc)
                     {
@@ -964,7 +985,10 @@ namespace PatchLoader
                             IVSSItem repItem = VSSDB.get_VSSItem($"{repCurrDir.Spec}/{linkItem.Name}");
                             sender($"Файл {repItem.Spec} найден");
 
-                            if (!CompareItems(repItem, linkItem, out IVSSItem lastItem))
+                            string localItem = Path.Combine(localPath, linkItem.Name);
+                            sender($"Сравнение версий. Локальный файл {localItem}");
+
+                            if (!CompareItems(repItem, linkItem, localItem, out IVSSItem lastItem))
                             {
                                 res = false;
                                 sender($"Разные версии у файлов {linkItem.Spec} и {repItem.Spec}. Последняя версия: {lastItem.Spec}");
