@@ -85,5 +85,11 @@ $/Patches/Production</Value>
     <Setting Name="PatchesLocalDir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="MainFolderToTest" Type="System.String" Scope="User">
+      <Value Profile="(Default)">$/Patches/Test/_CORE</Value>
+    </Setting>
+    <Setting Name="PatchesToTest" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

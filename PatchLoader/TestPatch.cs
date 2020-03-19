@@ -17,6 +17,10 @@ namespace PatchLoader
         public TestPatch()
         {
             InitializeComponent();
+
+            Icon = Properties.Resources.vsstest;
+
+            TbPatchList.Text = Properties.Settings.Default.PatchesToTest;
         }
 
         private void BtTest_Click(object sender, EventArgs e)
@@ -47,6 +51,7 @@ namespace PatchLoader
                         string dir = item.Split('/').Last();
                         DirectoryInfo patchDir = Directory.CreateDirectory(Path.Combine(localDir.FullName, dir));
                         vss.Pull(item, patchDir);
+                        OSUtils.SetAttributesNormal(patchDir);
 
                         vss.TestPatchDir(item, out string errDesc, patchDir);
                         TbErrors.Invoke(new Action(() => TbErrors.AppendText(errDesc)));
@@ -56,6 +61,10 @@ namespace PatchLoader
                     BtTest.Invoke(new Action(() => BtTest.Enabled = true));
                 });
                 th.Start();
+
+
+                Properties.Settings.Default.PatchesToTest = TbPatchList.Text;
+                Properties.Settings.Default.Save();
             }
 
         }
@@ -71,13 +80,23 @@ namespace PatchLoader
 
         private void BtGetList_Click(object sender, EventArgs e)
         {
-            EnterValueForm evf = new EnterValueForm("Папка с патчами");
+            EnterValueForm evf = new EnterValueForm("Папка с патчами", Properties.Settings.Default.MainFolderToTest);
             if(evf.ShowDialog() == DialogResult.OK)
             {
                 string dir = evf.Value;
+                Properties.Settings.Default.MainFolderToTest = evf.Value;
+                Properties.Settings.Default.Save();
 
                 VSSUtils vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
                 List<string> subdirs = vss.GetSubdirs(dir);
+
+                if(TbPatchList.Text != "")
+                {
+                    if(MessageBox.Show("Список патчей непустой. Очистить?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        TbPatchList.Clear();
+                    }
+                }
 
                 foreach(string subdir in subdirs)
                 {

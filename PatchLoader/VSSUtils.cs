@@ -515,17 +515,17 @@ namespace PatchLoader
         public static bool CheckPatchErrors(DirectoryInfo localDir, ref string errDesc)
         {
             bool res = true;
-            foreach(DirectoryInfo dir in localDir.EnumerateDirectories("*", SearchOption.AllDirectories))
+            foreach (DirectoryInfo dir in localDir.EnumerateDirectories("*", SearchOption.AllDirectories))
             {
-                if(dir.Name.Equals("TABLE", StringComparison.InvariantCultureIgnoreCase))
+                if (dir.Name.Equals("TABLE", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    foreach(FileInfo file in dir.EnumerateFiles("*.sql", SearchOption.TopDirectoryOnly))
+                    foreach (FileInfo file in dir.EnumerateFiles("*.sql", SearchOption.TopDirectoryOnly))
                     {
                         sender($"Проверка файла {file.FullName} на insert-ы");
                         using (StreamReader sr = new StreamReader(file.FullName, Encoding.GetEncoding("Windows-1251")))
                         {
                             string fileText = sr.ReadToEnd();
-                            if(fileText.IndexOf("insert into", StringComparison.InvariantCultureIgnoreCase) != -1)
+                            if (fileText.IndexOf("insert into", StringComparison.InvariantCultureIgnoreCase) != -1)
                             {
                                 errDesc += $"В файле {file.FullName} в папке Table идет insert" + Environment.NewLine;
                                 res = false;
@@ -537,18 +537,25 @@ namespace PatchLoader
                 {
                     using (StreamReader sr = new StreamReader(file.FullName, Encoding.GetEncoding("Windows-1251")))
                     {
-                        string fileText = 
+                        string fileText =
                             sr.ReadToEnd()
                             .Replace(Environment.NewLine, " ")
+                            .Replace(".", " . ")
+                            .Replace(",", " , ")
                             .Replace(";", " ; ")
                             .Replace(")", " ) ")
                             .Replace("(", " ( ")
                             .Replace("'", " ' ")
+                            .Replace(@"""", @" "" ")
+                            .Replace(":", " : ")
                             .Replace("=", " = ")
                             .Replace("+", " + ")
                             .Replace("-", " - ")
                             .Replace("*", " * ")
-                            .Replace("/", " / ");
+                            .Replace("/", " / ")
+                            .Replace(">", " > ")
+                            .Replace("<", " < ")
+                            .Replace("|", " | ");
 
                         string[] words = Regex.Split(fileText, "\\s+");
 
@@ -565,24 +572,55 @@ namespace PatchLoader
                                     {
                                         ++j;
                                     }
+                                    //до j должен быть задан TS
 
                                     bool TSFound = false;
+                                    bool CorrectTSOpUser = true;
+                                    bool schemaFound = false;
 
                                     for (int k = i; k < j; ++k)
                                     {
-                                        if (words[k].Equals("TABLESPACE", StringComparison.InvariantCultureIgnoreCase) &&
-                                            words[k + 1].Equals("TRASH", StringComparison.InvariantCultureIgnoreCase))
+                                        //если TS нашли, то true
+                                        if (words[k].Equals("TABLESPACE", StringComparison.InvariantCultureIgnoreCase))
+
                                         {
                                             TSFound = true;
+                                            for (int m = i; m < k; ++m)
+                                            {
+                                                //если схема OP_USER, но TS не TRASH, то ошибка
+                                                if (words[m].Equals("OP_USER", StringComparison.InvariantCultureIgnoreCase) &&
+                                                   words[m + 1].Equals(".", StringComparison.InvariantCultureIgnoreCase) &&
+                                                  !words[k + 1].Equals("TRASH", StringComparison.InvariantCultureIgnoreCase))
+                                                {
+                                                    CorrectTSOpUser = false;
+                                                }
+                                                if (words[m].Equals(".", StringComparison.InvariantCultureIgnoreCase))
+                                                {
+                                                    schemaFound = true;
+                                                }
+                                            }
+
+                                            if (!schemaFound && !words[k + 1].Equals("TRASH", StringComparison.InvariantCultureIgnoreCase))
+                                            {
+                                                CorrectTSOpUser = false;
+                                            }
+
                                             break;
                                         }
                                     }
 
                                     if (!TSFound)
                                     {
-                                        errDesc += $"В файле {file.FullName} в схеме для CREATE не найден TABLESPACE TRASH" + Environment.NewLine;
+                                        errDesc += $"В файле {file.FullName} в схеме для CREATE не найден TABLESPACE" + Environment.NewLine;
                                         res = false;
                                     }
+
+                                    if (!CorrectTSOpUser)
+                                    {
+                                        errDesc += $"В файле {file.FullName} в схеме OP_USER для CREATE не найден TABLESPACE TRASH" + Environment.NewLine;
+                                        res = false;
+                                    }
+
                                     sender($"Проверка {file.FullName} CREATE на TABLESPACE TRASH завершена");
                                 }
                             }
@@ -616,10 +654,11 @@ namespace PatchLoader
                             }
                         }
                     }
-                }              
+                }
             }
             return res;
         }
+
 
         public string CheckDir(DirectoryInfo localDir, List<FileInfoWithPatchOptions> patchFiles, string remotePath)
         {
@@ -974,7 +1013,8 @@ namespace PatchLoader
                 }
                 else
                 {
-                    if (linkItem.Name.StartsWith("SCRIPT_", StringComparison.InvariantCultureIgnoreCase))
+                    if (linkItem.Name.StartsWith("SCRIPT_", StringComparison.InvariantCultureIgnoreCase) ||
+                        Regex.IsMatch(linkItem.Name, "WF_.*_FIX.xml", RegexOptions.IgnoreCase))
                     {
                         sender($"Файл {linkItem.Spec} пропущен");
                     }
@@ -992,7 +1032,7 @@ namespace PatchLoader
                             {
                                 res = false;
                                 sender($"Разные версии у файлов {linkItem.Spec} и {repItem.Spec}. Последняя версия: {lastItem.Spec}");
-                                errDesc += $"Несоответствие версии для файла {linkItem.Spec}. Последняя версия: {lastItem.Spec}" + Environment.NewLine;
+                                errDesc += $"Несоответствие версии для файла {linkItem.Spec};{linkItem.VersionNumber}. Последняя версия: {lastItem.Spec};{lastItem.VersionNumber}" + Environment.NewLine;
                             }
                             else
                             {
