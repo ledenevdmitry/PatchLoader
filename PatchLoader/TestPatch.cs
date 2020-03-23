@@ -81,6 +81,7 @@ namespace PatchLoader
             ScMain.Height = ClientRectangle.Height - 8 * 3 - BtTest.Height;
 
             BtTest.Top = ScMain.Bottom + 8;
+            BtStop.Top = ScMain.Bottom + 8;
             BtGetList.Top = ScMain.Bottom + 8;
         }
 
