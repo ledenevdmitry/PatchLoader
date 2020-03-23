@@ -23,6 +23,8 @@ namespace PatchLoader
             TbPatchList.Text = Properties.Settings.Default.PatchesToTest;
         }
 
+        Thread th;
+
         private void BtTest_Click(object sender, EventArgs e)
         {
             VSSUtils vss = new VSSUtils(Properties.Settings.Default.BaseLocation, Environment.UserName);
@@ -43,9 +45,11 @@ namespace PatchLoader
                 Properties.Settings.Default.PatchesLocalDir = fbd.SelectedPath;
                 Properties.Settings.Default.Save();
 
-                Thread th = new Thread(() =>
+                th = new Thread(() =>
                 {
+                    BtStop.Invoke(new Action(() => BtStop.Enabled = true));
                     BtTest.Invoke(new Action(() => BtTest.Enabled = false));
+
                     foreach (string item in TbPatchList.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         string dir = item.Split('/').Last();
@@ -58,7 +62,9 @@ namespace PatchLoader
                         lf.AddToLog("Проверка завершена!");
                     }
 
+                    BtStop.Invoke(new Action(() => BtStop.Enabled = false));
                     BtTest.Invoke(new Action(() => BtTest.Enabled = true));
+                    MessageBox.Show("Проверка завершена", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 });
                 th.Start();
 
@@ -103,6 +109,13 @@ namespace PatchLoader
                     TbPatchList.AppendText(subdir + Environment.NewLine);
                 }
             }
+        }
+
+        private void BtStop_Click(object sender, EventArgs e)
+        {
+            th.Abort();
+            BtTest.Enabled = true;
+            BtStop.Enabled = false;
         }
     }
 }

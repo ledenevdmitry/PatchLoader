@@ -35,6 +35,7 @@
             this.TbErrors = new System.Windows.Forms.TextBox();
             this.ScMain = new System.Windows.Forms.SplitContainer();
             this.BtGetList = new System.Windows.Forms.Button();
+            this.BtStop = new System.Windows.Forms.Button();
             this.GbPatchList.SuspendLayout();
             this.GbErrors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScMain)).BeginInit();
@@ -60,6 +61,7 @@
             this.TbPatchList.Location = new System.Drawing.Point(3, 16);
             this.TbPatchList.Multiline = true;
             this.TbPatchList.Name = "TbPatchList";
+            this.TbPatchList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbPatchList.Size = new System.Drawing.Size(184, 178);
             this.TbPatchList.TabIndex = 0;
             // 
@@ -90,6 +92,7 @@
             this.TbErrors.Location = new System.Drawing.Point(3, 16);
             this.TbErrors.Multiline = true;
             this.TbErrors.Name = "TbErrors";
+            this.TbErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TbErrors.Size = new System.Drawing.Size(372, 178);
             this.TbErrors.TabIndex = 0;
             // 
@@ -111,7 +114,7 @@
             // 
             // BtGetList
             // 
-            this.BtGetList.Location = new System.Drawing.Point(138, 210);
+            this.BtGetList.Location = new System.Drawing.Point(264, 210);
             this.BtGetList.Name = "BtGetList";
             this.BtGetList.Size = new System.Drawing.Size(120, 34);
             this.BtGetList.TabIndex = 5;
@@ -119,11 +122,23 @@
             this.BtGetList.UseVisualStyleBackColor = true;
             this.BtGetList.Click += new System.EventHandler(this.BtGetList_Click);
             // 
+            // BtStop
+            // 
+            this.BtStop.Enabled = false;
+            this.BtStop.Location = new System.Drawing.Point(138, 210);
+            this.BtStop.Name = "BtStop";
+            this.BtStop.Size = new System.Drawing.Size(120, 34);
+            this.BtStop.TabIndex = 6;
+            this.BtStop.Text = "Остановить";
+            this.BtStop.UseVisualStyleBackColor = true;
+            this.BtStop.Click += new System.EventHandler(this.BtStop_Click);
+            // 
             // TestPatch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(599, 256);
+            this.Controls.Add(this.BtStop);
             this.Controls.Add(this.BtGetList);
             this.Controls.Add(this.ScMain);
             this.Controls.Add(this.BtTest);
@@ -150,5 +165,6 @@
         private System.Windows.Forms.TextBox TbErrors;
         private System.Windows.Forms.SplitContainer ScMain;
         private System.Windows.Forms.Button BtGetList;
+        private System.Windows.Forms.Button BtStop;
     }
 }
