@@ -21,6 +21,11 @@ namespace PatchLoader
             Icon = Properties.Resources.vsstest;
 
             TbPatchList.Text = Properties.Settings.Default.PatchesToTest;
+
+            if (File.Exists("err_log.txt"))
+            {
+                File.Delete("err_log.txt");
+            }
         }
 
         Thread th;
@@ -45,6 +50,8 @@ namespace PatchLoader
                 Properties.Settings.Default.PatchesLocalDir = fbd.SelectedPath;
                 Properties.Settings.Default.Save();
 
+                TbErrors.Clear();
+
                 th = new Thread(() =>
                 {
                     BtStop.Invoke(new Action(() => BtStop.Enabled = true));
@@ -53,12 +60,30 @@ namespace PatchLoader
                     foreach (string item in TbPatchList.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         string dir = item.Split('/').Last();
-                        DirectoryInfo patchDir = Directory.CreateDirectory(Path.Combine(localDir.FullName, dir));
+
+                        DirectoryInfo patchDir = new DirectoryInfo(Path.Combine(localDir.FullName, dir));
+
+                        if (Directory.Exists(patchDir.FullName))
+                        {
+                            OSUtils.SetAttributesNormal(patchDir);
+                            Directory.Delete(patchDir.FullName, true);
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(patchDir.FullName);
+                        }
+
                         vss.Pull(item, patchDir);
                         OSUtils.SetAttributesNormal(patchDir);
 
                         vss.TestPatchDir(item, out string errDesc, patchDir);
                         TbErrors.Invoke(new Action(() => TbErrors.AppendText(errDesc)));
+
+                        using (var sw = File.AppendText("err_log.txt"))
+                        {
+                            sw.WriteLine(errDesc);
+                        }
+
                         lf.AddToLog("Проверка завершена!");
                     }
 

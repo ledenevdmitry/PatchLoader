@@ -24,13 +24,16 @@ namespace PatchLoader
 
         public static void DeleteDir(DirectoryInfo dir)
         {
-            foreach (FileInfo file in dir.EnumerateFiles())
+            if (dir.Exists)
             {
-                file.Delete();
-            }
-            foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
-            {
-                dir.Delete(true);
+                foreach (FileInfo file in dir.EnumerateFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
+                {
+                    dir.Delete(true);
+                }
             }
         }
     }

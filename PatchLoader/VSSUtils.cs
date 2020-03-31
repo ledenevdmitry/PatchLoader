@@ -246,14 +246,28 @@ namespace PatchLoader
                 }
             }
 
+            Dictionary<string, DirectoryInfo> notExistsInVSS = new Dictionary<string, DirectoryInfo>(StringComparer.InvariantCultureIgnoreCase);
+
+            foreach(var dir in local.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+            {
+                notExistsInVSS.Add(dir.Name, dir);
+            }
+
             foreach (VSSItem subitem in remote.Items)
             {
+                notExistsInVSS.Remove(subitem.Name);
                 //0 - папка
                 if (subitem.Type == 0)
                 {
                     DirectoryInfo subdestination = new DirectoryInfo(Path.Combine(local.FullName, subitem.Name));
-                    DeleteLocalIfNotExistsInVSS(subitem, subdestination);
+                    DeleteLocalIfNotExistsInVSS(subitem, subdestination);   
                 }
+            }
+
+            foreach(var dir in notExistsInVSS.Values)
+            {
+                OSUtils.SetAttributesNormal(dir);
+                Directory.Delete(dir.FullName, true);
             }
         }
 
@@ -282,7 +296,7 @@ namespace PatchLoader
                     localPath.Create();
                     sender($"Папка {vssPath} найдена");
                 }
-                dir.Get(localPath.FullName, (int)(VSSFlags.VSSFLAG_RECURSYES/* | VSSFlags.VSSFLAG_REPREPLACE*/));
+                dir.Get(localPath.FullName, (int)(VSSFlags.VSSFLAG_RECURSYES | VSSFlags.VSSFLAG_REPREPLACE));
                 //DeleteLocalIfNotExistsInVSS(dir, localPath);
                 sender("Папка загружена!");
             }
